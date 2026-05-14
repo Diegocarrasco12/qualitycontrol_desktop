@@ -1,233 +1,215 @@
-# Logistic Control Center (LCC)
+# Quality Control Center (QCC)
 
-Sistema de control logístico industrial diseñado para la gestión, monitoreo y trazabilidad de procesos operativos en tiempo real. LCC permite administrar distintos módulos como consumo de materiales, gestión de bins, lavado, paletizado y otros procesos críticos dentro de una operación productiva.
+Sistema desktop industrial diseñado para el monitoreo, control y análisis de calidad en procesos productivos en tiempo real.
 
----
-
-## Descripción General
-
-Logistic Control Center es una aplicación de escritorio multiplataforma basada en .NET, que utiliza una interfaz web embebida para ofrecer una experiencia moderna sin depender de frameworks frontend complejos.
-
-El sistema está diseñado bajo una arquitectura modular, escalable y orientada a procesos industriales, permitiendo integrar múltiples fuentes de datos (MySQL y SAP) y manejar grandes volúmenes de información con eficiencia.
+QCC funciona como el panel administrativo y gerencial de una plataforma de control de calidad conectada a una aplicación móvil desarrollada en Flutter, utilizada directamente por operadores en planta para registrar inspecciones, métricas y reportes operacionales durante la producción.
 
 ---
 
-## Features
+# Descripción General
 
-- Modular architecture for scalable logistics operations
-- Real-time data processing and visualization
-- Integration with MySQL and SAP Business One
-- Dynamic SPA frontend without frameworks
-- Excel export functionality (ClosedXML)
-- Inline editing with persistence
-- Cross-platform desktop application (Windows / macOS)
+Quality Control Center permite visualizar, gestionar y analizar información de calidad proveniente desde líneas productivas industriales.
+
+Los operadores registran periódicamente controles de calidad, formularios e inspecciones desde dispositivos móviles, enviando los datos directamente a la base de datos central.
+
+Este sistema desktop consolida toda esa información para entregar:
+
+- Paneles operacionales
+- Métricas en tiempo real
+- KPIs de calidad
+- Formularios administrativos
+- Trazabilidad
+- Gestión de incidencias
+- Monitoreo de producción
+- Visualización estadística
+- Exportación de reportes
+
+El sistema está orientado a supervisores, jefaturas y gerencia de calidad.
 
 ---
 
-## Arquitectura del Sistema
+# Arquitectura del Sistema
 
-### Backend
+## Backend
 
 - Lenguaje: C#
 - Framework: .NET 8
+- Arquitectura: Modular
 - Patrón: Handler → Service → Repository
-- Comunicación: JSON message bridge mediante Photino.NET
-- Bases de datos:
-  - MySQL (operacional)
-  - SQL Server (SAP Business One)
+- Comunicación interna mediante Photino.NET
+- Integración con múltiples bases de datos
 
-### Frontend
+## Frontend
 
-- HTML, CSS, JavaScript (vanilla)
+- HTML
+- CSS
+- JavaScript Vanilla
 - Arquitectura SPA sin frameworks
-- Carga dinámica de módulos
-- Comunicación con backend vía `window.PhotinoBridge.send()`
+- Módulos dinámicos reutilizables
+- Comunicación backend vía `window.PhotinoBridge.send()`
 
-### Runtime
+## Runtime
 
-- Photino.NET (WebView embebido)
+- Photino.NET
+- Aplicación desktop multiplataforma
 - Compatible con Windows y macOS
 
 ---
 
-## Estructura del Proyecto
+# Objetivo del Sistema
 
+Centralizar el control operacional y administrativo de calidad industrial.
 
-LogisticControlCenter/
+La plataforma está diseñada para:
+
+- Supervisar procesos productivos
+- Detectar desviaciones de calidad
+- Registrar inspecciones
+- Gestionar formularios dinámicos
+- Analizar estadísticas operacionales
+- Visualizar métricas en vivo
+- Facilitar toma de decisiones gerenciales
+
+---
+
+# Integración Mobile + Desktop
+
+## Aplicación Mobile (Flutter)
+
+Los operadores en planta:
+
+- Registran controles de calidad
+- Reportan incidencias
+- Completan formularios
+- Suben datos operacionales
+- Registran métricas periódicas
+
+Toda la información es enviada en tiempo real hacia la base de datos central.
+
+---
+
+## Aplicación Desktop (QCC)
+
+Los supervisores y administradores pueden:
+
+- Monitorear información en vivo
+- Revisar estadísticas
+- Analizar tendencias
+- Administrar formularios
+- Validar registros
+- Visualizar KPIs
+- Gestionar trazabilidad
+- Exportar reportes
+
+---
+
+# Estructura del Proyecto
+
+```text
+QualityControlCenter/
 │
 ├── src/
 │   ├── Backend/
 │   │   ├── Config/
-│   │   │   └── AppSettings.cs
+│   │   ├── Models/
 │   │   ├── Modules/
-│   │   │   ├── Altillo/
-│   │   │   ├── Bins/
-│   │   │   ├── BinsLavado/
-│   │   │   ├── BinsPrint/
-│   │   │   ├── ConsumoPapel/
-│   │   │   └── Palets/
 │   │   ├── Repositories/
 │   │   ├── Services/
-│   │   │   ├── DbService.cs
-│   │   │   └── MessageRouter.cs
 │   │   └── Program.cs
 │   │
 │   └── UI/www/
 │       ├── core/
 │       ├── modules/
 │       ├── shared/
-│       ├── uploads/
 │       └── index.html
 │
-├── config.json
-├── config.example.json
-└── LogisticControlCenter.csproj
+├── QualityControlCenter.csproj
+└── README.md
 
+Flujo de Comunicación
 
----
+El sistema utiliza un flujo desacoplado basado en mensajería interna:
 
-## Principales Módulos
+Frontend
+   ↓
+PhotinoBridge
+   ↓
+MessageRouter
+   ↓
+Handler
+   ↓
+Service
+   ↓
+Repository
+   ↓
+Database
 
-### Consumo Papel
-
-- Registro y control de consumo por lote
-- KPIs diarios (consumo, tarjas, saldo)
-- Edición en línea de estados y salidas
-- Exportación a Excel
-
-### Altillo
-
-- Gestión de inventario intermedio
-- Campos editables con persistencia
-- KPIs operacionales
-- Soporte para edición masiva
-
-### Bins
-
-- Control de movimientos de bins
-- Registro de entradas y salidas
-
-### Lavado de Bins
-
-- Seguimiento de bins en proceso de lavado
-- Integración con base de datos `control_bins`
-
-### Palets
-
-- Registro y trazabilidad de palets
-- Integración con proceso de producción
-- Exportación de datos
-
----
-
-## Flujo de Comunicación
-
-El sistema utiliza un patrón de mensajería interno:
-
-Frontend → PhotinoBridge → MessageRouter → Handler → Service → Repository → DB
-
-Cada acción sigue una convención:
-
-
+Cada módulo implementa acciones bajo la convención:
 modulo.accion
 
-
-Ejemplos:
-consumo.obtenerConsumos
-palets.exportarExcel
-altillo.guardarCambios
-
-
----
-
-## Configuración
-
-El sistema utiliza un archivo `config.json` para gestionar las conexiones:
-
-```json
-{
-  "MySqlHost": "localhost",
-  "MySqlUser": "usuario",
-  "MySqlPassword": "password",
-  "SapHost": "localhost",
-  "SapDatabase": "DB_NAME",
-  "SapUser": "usuario",
-  "SapPassword": "password"
-}
-
+Características Principales
+Arquitectura modular escalable
+Sistema desktop industrial
+Integración mobile + desktop
+Estadísticas en tiempo real
+Formularios dinámicos
+KPIs operacionales
+Exportación Excel
+Integración multi-base de datos
+SPA sin frameworks
+Aplicación multiplataforma
+Alta velocidad de carga
+Diseño reutilizable por módulos
 Base de Datos
+
+El sistema puede conectarse a:
+
 MySQL
+SQL Server
+SAP Business One
+Bases operacionales independientes
 
-Bases utilizadas:
+La configuración se gestiona mediante archivos de entorno/configuración.
 
-consumo_papel
-control_bins
-
-Operaciones típicas:
-
-SELECT con filtros por fecha, código y lote
-Paginación mediante LIMIT/OFFSET
-Transacciones para actualizaciones masivas
-SAP (SQL Server)
-
-Consultas típicas:
-
-Integración con tablas OBTN y OITM
-Unión de múltiples bases productivas
-Uso de READ UNCOMMITTED para rendimiento
-Exportación a Excel
-Librería: ClosedXML
-Generación directa desde backend
-Archivos exportados al escritorio del usuario
-Instalación y Ejecución
+Exportación de Datos
+Exportación Excel mediante ClosedXML
+Generación automática de reportes
+Descarga local de archivos
+Soporte para reportes administrativos
+Instalación
 Requisitos
 .NET 8 SDK
-MySQL accesible
-SQL Server (SAP) accesible
-Ejecutar en desarrollo
+Base de datos accesible
+Windows o macOS
+
+
+Ejecutar en Desarrollo
 dotnet run
-Publicar aplicación
-dotnet publish -c Release -r win-x64 --self-contained true
-Publicación en macOS
+
+Publicar Aplicación Windows
 dotnet publish -c Release -r osx-x64 --self-contained true
-Convenciones del Proyecto
-Backend
 
-Cada módulo implementa:
-
-Handler
-Service
-Repository
-
-Formato de respuesta estándar:
-{
-  "ok": true,
-  "data": {},
-  "error": null
-}
-Frontend
-Sin frameworks
-Controladores por módulo
-Destrucción de eventos al cambiar de vista
-Uso de clases CSS reutilizables globales
-Buenas Prácticas Implementadas
-Separación clara de responsabilidades
-Arquitectura modular escalable
-Minimización de dependencias externas
-Control de estado en frontend
-Manejo consistente de errores
-Prevención de duplicación de eventos
-Optimización de consultas SQL
+Principios de Desarrollo
+Arquitectura desacoplada
+Reutilización de módulos
+Escalabilidad horizontal
+Separación de responsabilidades
+Frontend liviano
+Minimización de dependencias
+Alto rendimiento operacional
+Código mantenible
 Estado del Proyecto
-Sistema operativo en producción
-Múltiples módulos funcionales
-Instalador para Windows operativo
-Preparado para distribución en macOS
-Arquitectura lista para escalar
+Plataforma desktop operativa
+Arquitectura modular reutilizable
+Integración mobile funcional
+Preparado para escalar nuevos módulos
+Compatible con múltiples áreas industriales
 Autor
 
 Desarrollado por Diego Carrasco
 
-Proyecto enfocado en soluciones logísticas industriales y automatización de procesos
+Sistema orientado a automatización industrial, control operacional y plataformas de gestión productiva.
 
-# LCC
+
+
+
