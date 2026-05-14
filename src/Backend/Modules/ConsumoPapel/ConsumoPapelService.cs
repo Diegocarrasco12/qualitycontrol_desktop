@@ -1,7 +1,7 @@
-using LogisticControlCenter.Services;
-using LogisticControlCenter.Repositories.ConsumoPapel;
+using QualityControlCenter.Services;
+using QualityControlCenter.Repositories.ConsumoPapel;
 
-namespace LogisticControlCenter.Modules.ConsumoPapel
+namespace QualityControlCenter.Modules.ConsumoPapel
 {
     public class ConsumoPapelService
     {

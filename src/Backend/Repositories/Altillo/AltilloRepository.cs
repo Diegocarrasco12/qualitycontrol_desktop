@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MySqlConnector;
-using LogisticControlCenter.Modules.Altillo;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Modules.Altillo;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Repositories.Altillo
+namespace QualityControlCenter.Repositories.Altillo
 {
     public class AltilloRepository
     {

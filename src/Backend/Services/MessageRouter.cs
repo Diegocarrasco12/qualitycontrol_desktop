@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using LogisticControlCenter.Modules.Altillo;
-using LogisticControlCenter.Modules.Auth;
-using LogisticControlCenter.Modules.Bins;
-using LogisticControlCenter.Modules.BinsLavado;
-using LogisticControlCenter.Modules.ConsumoPapel;
-using LogisticControlCenter.Modules.Home;
-using LogisticControlCenter.Modules.Paletizado;
-using LogisticControlCenter.Modules.Palets;
-using LogisticControlCenter.Modules.Usuarios;
+using QualityControlCenter.Modules.Altillo;
+using QualityControlCenter.Modules.Auth;
+using QualityControlCenter.Modules.Bins;
+using QualityControlCenter.Modules.BinsLavado;
+using QualityControlCenter.Modules.ConsumoPapel;
+using QualityControlCenter.Modules.Home;
+using QualityControlCenter.Modules.Paletizado;
+using QualityControlCenter.Modules.Palets;
+using QualityControlCenter.Modules.Usuarios;
 
-namespace LogisticControlCenter.Services
+namespace QualityControlCenter.Services
 {
     public class MessageRouter
     {
@@ -100,7 +100,7 @@ namespace LogisticControlCenter.Services
                 }
                 else if (action.StartsWith("binsPrint"))
                 {
-                    var handler = new LogisticControlCenter.Modules.BinsPrint.BinsPrintHandler();
+                    var handler = new QualityControlCenter.Modules.BinsPrint.BinsPrintHandler();
                     rawResult = await handler.Handle(action, data);
                 }
                 else if (action.StartsWith("bins"))

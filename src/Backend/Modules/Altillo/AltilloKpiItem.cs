@@ -1,4 +1,4 @@
-namespace LogisticControlCenter.Modules.Altillo
+namespace QualityControlCenter.Modules.Altillo
 {
     public class AltilloKpiItem
     {

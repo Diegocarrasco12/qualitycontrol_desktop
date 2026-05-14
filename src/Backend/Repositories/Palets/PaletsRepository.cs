@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using MySqlConnector;
-using LogisticControlCenter.Modules.Palets;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Modules.Palets;
+using QualityControlCenter.Services;
 using Microsoft.Data.SqlClient;
 using ClosedXML.Excel;
 using System.IO;
 
-namespace LogisticControlCenter.Repositories.Palets
+namespace QualityControlCenter.Repositories.Palets
 {
     public class PaletsRepository
     {

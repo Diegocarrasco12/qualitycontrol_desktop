@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using MySqlConnector;
-using LogisticControlCenter.Services;
-using LogisticControlCenter.Modules.BinsLavado;
+using QualityControlCenter.Services;
+using QualityControlCenter.Modules.BinsLavado;
 using ClosedXML.Excel;
 using System.IO;
 
-namespace LogisticControlCenter.Repositories.BinsLavado
+namespace QualityControlCenter.Repositories.BinsLavado
 {
     public class BinsLavadoRepository
     {

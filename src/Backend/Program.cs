@@ -5,14 +5,14 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using LogisticControlCenter.Backend.Services;
-using LogisticControlCenter.Config;
-using LogisticControlCenter.Modules.Auth;
-using LogisticControlCenter.Repositories.Auth;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Backend.Services;
+using QualityControlCenter.Config;
+using QualityControlCenter.Modules.Auth;
+using QualityControlCenter.Repositories.Auth;
+using QualityControlCenter.Services;
 using Photino.NET;
 
-namespace LogisticControlCenter
+namespace QualityControlCenter
 {
     class Program
     {
@@ -54,7 +54,7 @@ namespace LogisticControlCenter
                 {
                     var appDataDir = Path.Combine(
                         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        "LogisticControlCenter"
+                        "QualityControlCenter"
                     );
 
                     Directory.CreateDirectory(appDataDir);

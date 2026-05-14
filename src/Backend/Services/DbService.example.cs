@@ -4,7 +4,7 @@ using System.Text.Json;
 using Microsoft.Data.SqlClient;
 using MySqlConnector;
 
-namespace LogisticControlCenter.Services
+namespace QualityControlCenter.Services
 {
     /// <summary>
     /// DbService
@@ -136,7 +136,7 @@ namespace LogisticControlCenter.Services
 
                 ConnectTimeout = 5,
 
-                ApplicationName = "LogisticControlCenter",
+                ApplicationName = "QualityControlCenter",
             };
 
             return new SqlConnection(builder.ConnectionString);

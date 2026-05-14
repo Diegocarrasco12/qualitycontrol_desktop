@@ -1,6 +1,6 @@
-using LogisticControlCenter.Repositories.Paletizado;
+using QualityControlCenter.Repositories.Paletizado;
 
-namespace LogisticControlCenter.Services
+namespace QualityControlCenter.Services
 {
     public class PaletizadoService
     {

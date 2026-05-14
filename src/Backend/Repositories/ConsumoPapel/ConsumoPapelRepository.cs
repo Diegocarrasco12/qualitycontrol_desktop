@@ -1,8 +1,8 @@
-using LogisticControlCenter.Modules.ConsumoPapel;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Modules.ConsumoPapel;
+using QualityControlCenter.Services;
 using MySqlConnector;
 
-namespace LogisticControlCenter.Repositories.ConsumoPapel
+namespace QualityControlCenter.Repositories.ConsumoPapel
 {
     public class ConsumoPapelRepository
     {

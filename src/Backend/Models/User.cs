@@ -1,6 +1,6 @@
 using System;
 
-namespace LogisticControlCenter.Models
+namespace QualityControlCenter.Models
 {
     public class User
     {

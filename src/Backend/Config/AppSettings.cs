@@ -1,4 +1,4 @@
-namespace LogisticControlCenter.Config
+namespace QualityControlCenter.Config
 {
     public class AppSettings
     {

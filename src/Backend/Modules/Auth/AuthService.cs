@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using BCrypt.Net;
-using LogisticControlCenter.Models;
-using LogisticControlCenter.Repositories.Auth;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Models;
+using QualityControlCenter.Repositories.Auth;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Modules.Auth
+namespace QualityControlCenter.Modules.Auth
 {
     public class AuthService
     {

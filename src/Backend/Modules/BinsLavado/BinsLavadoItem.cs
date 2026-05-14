@@ -1,4 +1,4 @@
-namespace LogisticControlCenter.Modules.BinsLavado
+namespace QualityControlCenter.Modules.BinsLavado
 {
     public class BinsLavadoItem
     {

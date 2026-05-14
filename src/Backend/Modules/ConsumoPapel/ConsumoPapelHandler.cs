@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using System.Text.Json;
 using ClosedXML.Excel;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Modules.ConsumoPapel
+namespace QualityControlCenter.Modules.ConsumoPapel
 {
     public class ConsumoPapelHandler
     {

@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
-using LogisticControlCenter.Backend.Models;
+using QualityControlCenter.Backend.Models;
 
-namespace LogisticControlCenter.Backend.Services
+namespace QualityControlCenter.Backend.Services
 {
     public class UpdateService
     {

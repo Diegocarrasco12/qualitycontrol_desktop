@@ -1,9 +1,9 @@
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Modules.Home
+namespace QualityControlCenter.Modules.Home
 {
     public class HomeHandler
     {

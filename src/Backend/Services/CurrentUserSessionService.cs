@@ -1,6 +1,6 @@
-using LogisticControlCenter.Models;
+using QualityControlCenter.Models;
 
-namespace LogisticControlCenter.Services
+namespace QualityControlCenter.Services
 {
     public class CurrentUserSessionService
     {

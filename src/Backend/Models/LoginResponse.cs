@@ -1,4 +1,4 @@
-namespace LogisticControlCenter.Models
+namespace QualityControlCenter.Models
 {
     public class LoginResponse
     {

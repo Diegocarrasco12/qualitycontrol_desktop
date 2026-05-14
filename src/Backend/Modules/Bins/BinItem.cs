@@ -1,4 +1,4 @@
-namespace LogisticControlCenter.Modules.Bins
+namespace QualityControlCenter.Modules.Bins
 {
     // =========================
     // ITEM PRINCIPAL (TABLA)

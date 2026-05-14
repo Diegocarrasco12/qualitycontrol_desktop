@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using MySqlConnector;
-using LogisticControlCenter.Modules.Bins;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Modules.Bins;
+using QualityControlCenter.Services;
 using ClosedXML.Excel;
 
-namespace LogisticControlCenter.Repositories.Bins
+namespace QualityControlCenter.Repositories.Bins
 {
     public class BinsRepository
     {

@@ -1,4 +1,4 @@
-namespace LogisticControlCenter.Modules.ConsumoPapel
+namespace QualityControlCenter.Modules.ConsumoPapel
 {
     public class ConsumoPapelItem
     {

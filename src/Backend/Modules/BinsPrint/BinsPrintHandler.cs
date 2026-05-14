@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace LogisticControlCenter.Modules.BinsPrint
+namespace QualityControlCenter.Modules.BinsPrint
 {
     public class BinsPrintHandler
     {

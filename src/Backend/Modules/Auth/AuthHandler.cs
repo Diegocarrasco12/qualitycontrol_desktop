@@ -1,7 +1,7 @@
 using System.Text.Json;
-using LogisticControlCenter.Models;
+using QualityControlCenter.Models;
 
-namespace LogisticControlCenter.Modules.Auth
+namespace QualityControlCenter.Modules.Auth
 {
     public class AuthHandler
     {

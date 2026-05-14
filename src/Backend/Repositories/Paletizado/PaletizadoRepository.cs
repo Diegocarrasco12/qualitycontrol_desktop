@@ -1,7 +1,7 @@
-using LogisticControlCenter.Services;
+using QualityControlCenter.Services;
 using MySqlConnector;
 
-namespace LogisticControlCenter.Repositories.Paletizado
+namespace QualityControlCenter.Repositories.Paletizado
 {
     public class PaletizadoRepository
     {

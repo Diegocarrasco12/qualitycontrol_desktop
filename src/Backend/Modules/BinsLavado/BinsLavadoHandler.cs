@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Services;
 using System.IO;
 using System.Diagnostics;
 
-namespace LogisticControlCenter.Modules.BinsLavado
+namespace QualityControlCenter.Modules.BinsLavado
 {
     public class BinsLavadoHandler
     {

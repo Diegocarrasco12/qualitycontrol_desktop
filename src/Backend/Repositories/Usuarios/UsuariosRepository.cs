@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LogisticControlCenter.Models;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Models;
+using QualityControlCenter.Services;
 using MySqlConnector;
 
-namespace LogisticControlCenter.Repositories.Usuarios
+namespace QualityControlCenter.Repositories.Usuarios
 {
     public class UsuariosRepository
     {

@@ -1,4 +1,4 @@
-namespace LogisticControlCenter.Backend.Models
+namespace QualityControlCenter.Backend.Models
 {
     public class UpdateInfo
     {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using LogisticControlCenter.Repositories.Palets;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Repositories.Palets;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Modules.Palets
+namespace QualityControlCenter.Modules.Palets
 {
     public class PaletsService
     {

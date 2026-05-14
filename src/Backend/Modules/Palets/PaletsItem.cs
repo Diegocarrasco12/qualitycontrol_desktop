@@ -1,4 +1,4 @@
-namespace LogisticControlCenter.Modules.Palets
+namespace QualityControlCenter.Modules.Palets
 {
     public class PaletsItem
     {

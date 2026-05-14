@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Modules.Palets
+namespace QualityControlCenter.Modules.Palets
 {
     public class PaletsHandler
     {

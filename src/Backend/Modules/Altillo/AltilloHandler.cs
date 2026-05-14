@@ -1,7 +1,7 @@
 using System.Text.Json;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Modules.Altillo
+namespace QualityControlCenter.Modules.Altillo
 {
     public class AltilloHandler
     {

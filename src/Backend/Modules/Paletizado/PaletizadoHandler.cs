@@ -1,10 +1,10 @@
 using System.Text.Json;
 using ClosedXML.Excel;
-using LogisticControlCenter.Repositories.Paletizado;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Repositories.Paletizado;
+using QualityControlCenter.Services;
 using MySqlConnector;
 
-namespace LogisticControlCenter.Modules.Paletizado
+namespace QualityControlCenter.Modules.Paletizado
 {
     public class PaletizadoHandler
     {

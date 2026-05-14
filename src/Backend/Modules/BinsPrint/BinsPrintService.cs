@@ -2,7 +2,7 @@ using System;
 using System.Net.Sockets;
 using System.Text;
 
-namespace LogisticControlCenter.Modules.BinsPrint
+namespace QualityControlCenter.Modules.BinsPrint
 {
     public class BinsPrintService
     {

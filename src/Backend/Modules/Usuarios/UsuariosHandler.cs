@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using BCrypt.Net;
-using LogisticControlCenter.Models;
-using LogisticControlCenter.Repositories.Usuarios;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Models;
+using QualityControlCenter.Repositories.Usuarios;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Modules.Usuarios
+namespace QualityControlCenter.Modules.Usuarios
 {
     public class UsuariosHandler
     {

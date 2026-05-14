@@ -1,7 +1,7 @@
 using MySqlConnector;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Modules.Home
+namespace QualityControlCenter.Modules.Home
 {
     public class HomeService
     {

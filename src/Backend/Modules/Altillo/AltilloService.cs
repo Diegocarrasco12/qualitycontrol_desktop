@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using LogisticControlCenter.Repositories.Altillo;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Repositories.Altillo;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Modules.Altillo
+namespace QualityControlCenter.Modules.Altillo
 {
     public class AltilloService
     {

@@ -1,7 +1,7 @@
-using LogisticControlCenter.Services;
-using LogisticControlCenter.Repositories.Bins;
+using QualityControlCenter.Services;
+using QualityControlCenter.Repositories.Bins;
 
-namespace LogisticControlCenter.Modules.Bins
+namespace QualityControlCenter.Modules.Bins
 {
     public class BinsService
     {

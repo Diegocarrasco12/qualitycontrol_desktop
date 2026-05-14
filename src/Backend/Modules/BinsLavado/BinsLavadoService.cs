@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using LogisticControlCenter.Repositories.BinsLavado;
-using LogisticControlCenter.Modules.BinsLavado;
-using LogisticControlCenter.Services;
+using QualityControlCenter.Repositories.BinsLavado;
+using QualityControlCenter.Modules.BinsLavado;
+using QualityControlCenter.Services;
 
-namespace LogisticControlCenter.Modules.BinsLavado
+namespace QualityControlCenter.Modules.BinsLavado
 {
     public class BinsLavadoService
     {
