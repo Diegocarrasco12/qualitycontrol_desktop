@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Logistic Control Center</title>
+
+    <!-- 🔥 Evitar cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="core/styles.css">
+
+    <!-- Librerías -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="./libs/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- ========================= -->
+    <!-- SPLASH SCREEN -->
+    <!-- ========================= -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logos">
+                <img src="logo.png" class="splash-logo splash-logo-innpack" />
+                <img src="LOGO-FARET-spa-256.png" class="splash-logo splash-logo-faret" />
+            </div>
+
+            <h1>Bienvenido</h1>
+            <p class="splash-sub">Logistic Control Center</p>
+            <p id="splash-text">Iniciando sistema...</p>
+            <div class="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- SIDEBAR -->
+    <!-- ========================= -->
+    <div class="sidebar" id="sidebar">
+        <div>
+            <div class="logo">Logistic Control</div>
+            <div class="subtitle">Operations Center</div>
+
+            <div class="menu">
+                <div class="section-title">SISTEMAS</div>
+                <button data-module="inicio">🏠 Inicio</button>
+                <button data-module="consumo">📦 Consumo Papel</button>
+                <button data-module="altillo">🏗 Altillo</button>
+                <button data-module="bins">♻ BINS</button>
+                <button data-module="bins-lavado">🧼 Lavado BINS</button>
+                <button data-module="palets">📄 Movimientos Palets Entre Plantas</button>
+                <button data-module="paletizado">📦 Sistema Paletizado</button>
+                <button data-module="bins-print">🖨 Impresión QR BINS</button>
+                <button id="btn-usuarios" data-module="usuarios" style="display: none;">👥 Gestión de Usuarios</button>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-session-box">
+                <div class="sidebar-session-label">Sesión activa</div>
+                <div id="sidebar-username" class="sidebar-username">-</div>
+                <button id="logout-btn" class="sidebar-logout-btn" type="button">
+                    Cerrar sesión
+                </button>
+            </div>
+
+            <div class="version">Version 2.1.9</div>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- MAIN -->
+    <!-- ========================= -->
+    <div class="main" id="main-layout">
+
+        <div class="header">
+            <div class="title">Panel Operacional</div>
+
+            <div class="status">
+                <div><span class="dot green"></span>SAP</div>
+                <div><span class="dot green"></span>DB</div>
+                <div><span class="dot green"></span>API</div>
+                <div><span class="dot yellow"></span>Zebra</div>
+            </div>
+        </div>
+
+        <div class="workspace">
+
+            <!-- DASHBOARD -->
+            <div class="dashboard" id="dashboard">
+                <h2>Bienvenido al Logistic Control Center</h2>
+                <p>Selecciona un sistema desde el panel izquierdo para comenzar.</p>
+
+                <div class="cards">
+                    <div class="card">SAP Online</div>
+                    <div class="card">Database Online</div>
+                    <div class="card">API Services Running</div>
+                </div>
+            </div>
+
+            <!-- 🔥 CONTENEDOR DEL ROUTER -->
+            <div id="app-content"></div>
+
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- 🔥 BRIDGE REAL (ASYNC PRO) -->
+    <!-- ========================= -->
+    <script>
+        window.PhotinoBridge = {
+            _callbacks: {},
+            _id: 0,
+
+            send: function (payload) {
+                return new Promise((resolve, reject) => {
+
+                    const id = ++this._id;
+
+                    this._callbacks[id] = resolve;
+
+                    const message = {
+                        id: id,
+                        payload: payload
+                    };
+
+                    if (window.external && window.external.sendMessage) {
+                        window.external.sendMessage(JSON.stringify(message));
+                    } else {
+                        console.error("❌ Photino no disponible");
+                        reject("Photino no disponible");
+                    }
+                });
+            },
+
+            receive: function (message) {
+                try {
+                    const data = JSON.parse(message);
+
+                    if (data.type === "update_notice") {
+                        alert(data.message);
+                        return;
+                    }
+
+                    const callback = this._callbacks[data.id];
+
+                    if (callback) {
+                        callback(data.data);
+                        delete this._callbacks[data.id];
+                    }
+
+                } catch (err) {
+                    console.error("❌ Error procesando respuesta:", err);
+                }
+            }
+        };
+
+        // ✅ FIX CORRECTO PHOTINO
+        if (window.external && window.external.receiveMessage) {
+            window.external.receiveMessage((message) => {
+                window.PhotinoBridge.receive(message);
+            });
+        }
+    </script>
+
+    <!-- ========================= -->
+    <!-- JS PRINCIPAL -->
+    <!-- ========================= -->
+    <script src="core/app.js"></script>
+
+</body>
+
+</html>

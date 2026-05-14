@@ -1,0 +1,116 @@
+<div class="module home-module">
+
+    <!-- HEADER -->
+    <div class="module-header">
+        <div class="module-title">Panel de Control</div>
+    </div>
+
+    <!-- =========================
+         GRID DE MÓDULOS
+    ========================== -->
+    <div class="home-modules-grid">
+
+        <div class="home-module-card" data-module-target="bins">
+            <div>
+                <div class="home-module-card-title">📦 BINS</div>
+                <div class="home-module-card-value" id="bins-count">0</div>
+                <div class="home-module-card-label">movimientos registrados</div>
+            </div>
+        </div>
+
+        <div class="home-module-card" data-module-target="bins-lavado">
+            <div>
+                <div class="home-module-card-title">🧼 Lavado BINS</div>
+                <div class="home-module-card-value" id="lavado-count">0</div>
+                <div class="home-module-card-label">procesos de limpieza</div>
+            </div>
+        </div>
+
+        <div class="home-module-card" data-module-target="palets">
+            <div>
+                <div class="home-module-card-title">📦 Movimiento Palets Entre Plantas</div>
+                <div class="home-module-card-value" id="palets-count">0</div>
+                <div class="home-module-card-label">movimientos de palets</div>
+            </div>
+        </div>
+        <div class="home-module-card" data-module-target="paletizado">
+            <div>
+                <div class="home-module-card-title">📦 Sistema Paletizado</div>
+                <div class="home-module-card-value" id="paletizado-count">0</div>
+                <div class="home-module-card-label">registro de palets</div>
+            </div>
+        </div>
+
+        <div class="home-module-card" data-module-target="consumo">
+            <div>
+                <div class="home-module-card-title">📄 Consumo Papel</div>
+                <div class="home-module-card-value" id="consumo-count">0</div>
+                <div class="home-module-card-label">consumo registrado</div>
+            </div>
+        </div>
+
+        <div class="home-module-card" data-module-target="altillo">
+            <div>
+                <div class="home-module-card-title">🏗 Altillo</div>
+                <div class="home-module-card-value" id="altillo-count">0</div>
+                <div class="home-module-card-label">movimientos en altillo</div>
+            </div>
+        </div>
+
+        <div class="home-module-card" data-module-target="bins-print">
+            <div>
+                <div class="home-module-card-title">🖨 Impresión QR Bins</div>
+                <div class="home-module-card-value">→</div>
+                <div class="home-module-card-label">acceso directo</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- =========================
+         📊 GRÁFICOS
+    ========================== -->
+    <div class="home-middle">
+
+        <div class="card">
+            <div class="module-title">📊 Movimientos últimos 7 días</div>
+            <canvas id="chart-movimientos" style="height:300px;"></canvas>
+        </div>
+
+        <div class="card">
+            <div class="module-title">📦 Distribución operación (hoy)</div>
+            <canvas id="chart-distribucion" style="height:300px;"></canvas>
+        </div>
+
+    </div>
+
+    <!-- =========================
+         SECCIÓN INFERIOR
+    ========================== -->
+    <div class="home-bottom">
+
+        <!-- ACTIVIDAD -->
+        <div class="card">
+
+            <div class="module-title">📊 Actividad reciente</div>
+            <div id="actividad-reciente"></div>
+        </div>
+
+        <!-- ALERTAS + ACCIONES -->
+        <div style="flex:1;">
+            <!-- ALERTAS -->
+            <div class="card" style="height:100%;">
+
+                <div class="module-title">⚠ Alertas del sistema</div>
+
+                <div id="alertas-list"></div>
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</div>

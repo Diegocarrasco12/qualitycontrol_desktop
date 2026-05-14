@@ -1,0 +1,88 @@
+<div class="module">
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+    <div class="module-header">
+        <div class="module-title">📋 Movimientos PALETS</div>
+
+        <div class="module-actions">
+            <button class="btn-primary" id="btnBuscar">Filtrar</button>
+            <button class="btn-secondary" id="btnLimpiar">🧹 Limpiar</button>
+            <button class="btn-secondary" id="btnExportar">📤 Exportar</button>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- FILTROS -->
+    <!-- ========================= -->
+    <div class="filters">
+
+        <input type="text" id="fechaDesde" placeholder="Fecha desde">
+        <input type="text" id="fechaHasta" placeholder="Fecha hasta">
+
+        <input type="text" id="filtroLote" placeholder="Lote">
+
+        <select id="filtroPlanta">
+            <option value="">Todas las plantas</option>
+            <option value="INNPACK">INNPACK</option>
+            <option value="FARET">FARET</option>
+            <option value="SFM">SFM</option>
+            <option value="EUROPA">EUROPA</option>
+            <option value="DOMINGO ARTEAGA">DOMINGO ARTEAGA</option>
+        </select>
+
+        <select id="filtroTipo">
+            <option value="">Todos</option>
+            <option value="ENTRADA">ENTRADA</option>
+            <option value="SALIDA">SALIDA</option>
+        </select>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- KPI -->
+    <!-- ========================= -->
+    <div class="kpi-row">
+
+        <div class="kpi-card">
+            <div class="kpi-label">Movimientos</div> <!-- 🔥 CAMBIO -->
+            <div class="kpi-value" id="kpiTotal">0</div>
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- TABLA -->
+    <!-- ========================= -->
+    <div class="table-container">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Lote</th>
+                    <th>Código</th>
+                    <th>Detalle</th>
+                    <th>Planta</th>
+                    <th>Movimiento</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+
+            <tbody id="tbodyPalets">
+                <tr>
+                    <td colspan="8">Cargando...</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- PAGINACIÓN -->
+    <!-- ========================= -->
+    <div class="pagination" id="paginacion"></div>
+
+</div>

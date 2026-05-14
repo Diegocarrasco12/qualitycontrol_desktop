@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>lcc_logo.ico</ApplicationIcon>
+    <Version>2.1.9</Version>
+    <AssemblyVersion>2.1.9</AssemblyVersion>
+    <FileVersion>2.1.9</FileVersion>
+  </PropertyGroup>
+
+  <!-- DEPENDENCIAS -->
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.3.9" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+    <PackageReference Include="MySqlConnector" Version="2.5.0" />
+    <PackageReference Include="Photino.NET" Version="4.0.16" />
+  </ItemGroup>
+
+  <!-- 🔥 FRONTEND (CONFIG PROFESIONAL Y ESTABLE) -->
+  <ItemGroup>
+
+    <None Remove="src/UI/www/**" />
+
+    <Content Include="src/UI/www/**/*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+
+  </ItemGroup>
+  <!-- ICONO APP -->
+<ItemGroup>
+  <None Include="lcc_logo.ico">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+  </None>
+</ItemGroup>
+
+</Project>

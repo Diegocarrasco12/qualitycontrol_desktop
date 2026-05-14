@@ -1,0 +1,95 @@
+<div class="module">
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+    <div class="module-header">
+        <div class="module-title">📦 Control de BINS</div>
+
+        <div class="module-actions">
+            <button class="btn-primary" id="btnFiltrar">Filtrar</button>
+            <button class="btn-secondary" id="btnLimpiar">🧹 Limpiar</button>
+            <button class="btn-primary" id="btnGuardar">💾 Guardar</button>
+            <button class="btn-secondary" id="btnExportar">📤 Exportar</button>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- FILTROS -->
+    <!-- ========================= -->
+    <div class="filters">
+
+        <input type="text" id="fechaDesde" placeholder="Fecha desde">
+        <input type="text" id="fechaHasta" placeholder="Fecha hasta">
+
+        <input type="text" id="filtroBin" placeholder="Bin / Código / ID">
+        <input type="text" id="filtroCalle" placeholder="Calle">
+        <input type="text" id="filtroDocumento" placeholder="Documento">
+
+        <select id="filtroTipo">
+            <option value="">Todos</option>
+            <option value="ENTRADA">Entrada</option>
+            <option value="SALIDA">Salida</option>
+        </select>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- KPIs -->
+    <!-- ========================= -->
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-label">Total</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Entradas Hoy</div>
+            <div class="kpi-value" id="kpiEntradas">0</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Salidas Hoy</div>
+            <div class="kpi-value" id="kpiSalidas">0</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Último BIN</div>
+            <div class="kpi-value" id="kpiUltimo">-</div>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- TABLA -->
+    <!-- ========================= -->
+    <div class="table-container">
+
+        <table id="tablaBins" class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha / Hora</th>
+                    <th>Nº BIN</th>
+                    <th>Documento</th>
+                    <th>Proveedor</th>
+                    <th>Estado BIN</th>
+                    <th>BIN</th>
+                    <th>Calle</th>
+                    <th>Tipo Movimiento</th>
+                    <th>Archivo</th>
+                </tr>
+            </thead>
+
+            <tbody id="tbodyBins">
+                <!-- Render dinámico -->
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- PAGINACIÓN -->
+    <!-- ========================= -->
+    <div class="pagination" id="paginacion"></div>
+
+</div>

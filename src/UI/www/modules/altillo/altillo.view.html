@@ -1,0 +1,126 @@
+<div class="module">
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+    <div class="module-header">
+
+        <div class="module-title">
+            Altillo
+        </div>
+
+        <div class="module-actions">
+            <button class="btn-secondary" id="btnExportar">📤 Exportar</button>
+            <button class="btn-primary" id="btnGuardar">💾 Guardar Cambios</button>
+            <button class="btn-secondary" id="btnActualizar">🔄 Actualizar</button>
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- KPIs -->
+    <!-- ========================= -->
+    <div class="kpi-row">
+
+        <div class="kpi-card">
+            <div class="kpi-label">Total Registros</div>
+            <div class="kpi-value" id="kpiTotalRegistros">--</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Saldo Total</div>
+            <div class="kpi-value" id="kpiSaldoTotal">--</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Último Registro</div>
+            <div class="kpi-value" id="kpiUltimoRegistro">--</div>
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- CARD PRINCIPAL -->
+    <!-- ========================= -->
+    <div class="card">
+
+        <!-- ========================= -->
+        <!-- FILTROS -->
+        <!-- ========================= -->
+        <div class="filters">
+
+            <input type="text" id="filtroFechaDesde" placeholder="📅 Desde">
+            <input type="text" id="filtroFechaHasta" placeholder="📅 Hasta">
+            <input type="text" id="filtroCodigo" placeholder="🔎 Código">
+            <input type="text" id="filtroLote" placeholder="📦 Lote">
+
+            <button class="btn-primary" id="btnFiltrar">Filtrar</button>
+            <button class="btn-secondary" id="btnLimpiar">Limpiar</button>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- TABLA -->
+        <!-- ========================= -->
+        <div class="table-container">
+
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Código</th>
+                        <th>Consumo</th>
+                        <th>NP</th>
+                        <th>Tarja</th>
+                        <th>Saldo</th>
+                        <th>Lote</th>
+                        <th>Comentario</th>
+                        <th>Estado</th>
+                        <th>Extra</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaAltillo">
+                    <tr>
+                        <td colspan="13" class="loading">
+                            ⏳ Cargando datos...
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- PAGINACIÓN -->
+        <!-- ========================= -->
+        <div class="pagination" id="pagination"></div>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    
+        if (typeof flatpickr !== "undefined") {
+    
+            flatpickr("#filtroFechaDesde", {
+                dateFormat: "Y-m-d"
+            });
+    
+            flatpickr("#filtroFechaHasta", {
+                dateFormat: "Y-m-d"
+            });
+    
+        } else {
+            console.warn("⚠ flatpickr no está cargado");
+        }
+    
+    });
+    </script>

@@ -1,0 +1,98 @@
+<div class="module">
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+    <div class="module-header">
+
+        <div class="module-title">
+            📦 Registro Paletizado
+        </div>
+
+        <div class="module-actions">
+            <button class="btn-secondary" id="btnExportar">📤 Exportar</button>
+            <button class="btn-secondary" id="btnActualizar">🔄 Actualizar</button>
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- CARD PRINCIPAL -->
+    <!-- ========================= -->
+    <div class="card">
+
+        <!-- ========================= -->
+        <!-- FILTROS -->
+        <!-- ========================= -->
+        <div class="filters">
+
+            <input type="text" id="filtroFechaDesde" placeholder="📅 Fecha desde">
+            <input type="text" id="filtroFechaHasta" placeholder="📅 Fecha hasta">
+
+            <input type="text" id="filtroPlanta" placeholder="🏭 Planta">
+            <input type="text" id="filtroTaller" placeholder="🛠 Taller">
+
+            <input type="text" id="filtroNP" placeholder="🔎 NP Cliente">
+            <input type="text" id="filtroIdPalet" placeholder="🆔 ID Palet">
+
+            <button class="btn-primary" id="btnFiltrar">Filtrar</button>
+            <button class="btn-secondary" id="btnLimpiar">Limpiar</button>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- TABLA -->
+        <!-- ========================= -->
+        <div class="table-container">
+
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th>ID Palet</th>
+                        <th>Fecha</th>
+                        <th>Planta</th>
+                        <th>NP Cliente</th>
+                        <th>NP Innpack</th>
+                        <th>Nombre Cliente</th>
+                        <th>Taller</th>
+                        <th>Tipo</th>
+                        <th>Cantidad</th>
+                        <th>Unid x Pliego</th>
+                        <th>Valor Unitario</th>
+                        <th>Valor Total</th>
+                        <th>Descripción</th>
+                        <th>Fecha Impresión</th>
+                        <th>Emisor Tarja</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaPalets">
+
+                    <tr id="loadingRow">
+                        <td colspan="15" class="loading">
+                            ⏳ Cargando datos...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- SIN DATOS -->
+        <!-- ========================= -->
+        <div id="sinDatos" class="empty-state" style="display:none;">
+            📭 No se encontraron resultados
+        </div>
+
+        <!-- ========================= -->
+        <!-- PAGINACIÓN -->
+        <!-- ========================= -->
+        <div class="pagination" id="pagination"></div>
+
+    </div>
+
+</div>
