@@ -1,0 +1,103 @@
+<div class="module">
+
+    <div class="module-header">
+        <div>
+            <div class="module-title">Registros Producción</div>
+            <div class="subtitle">Consulta de registros operacionales clasificados como producción</div>
+        </div>
+
+        <div class="module-actions">
+            <button class="btn-secondary" id="btnExportarRegistrosProduccion">Exportar Excel</button>
+            <button class="btn-primary" id="btnActualizarRegistrosProduccion">Actualizar</button>
+        </div>
+    </div>
+
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-label">Total registros</div>
+            <div class="kpi-value" id="prodTotalRegistros">0</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Registros hoy</div>
+            <div class="kpi-value" id="prodRegistrosHoy">0</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Máquinas con registros</div>
+            <div class="kpi-value" id="prodMaquinasConRegistros">0</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Rechazos</div>
+            <div class="kpi-value" id="prodRechazos">0</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="filters dashboard-filters">
+
+            <div class="filter-field">
+                <label for="fechaDesdeProduccion">Fecha desde</label>
+                <input
+                    type="text"
+                    id="fechaDesdeProduccion"
+                    placeholder="Seleccionar fecha" />
+            </div>
+
+            <div class="filter-field">
+                <label for="fechaHastaProduccion">Fecha hasta</label>
+                <input
+                    type="text"
+                    id="fechaHastaProduccion"
+                    placeholder="Seleccionar fecha" />
+            </div>
+
+            <div class="filter-field">
+                <label for="filtroRegistrosProduccion">Búsqueda</label>
+                <input
+                    id="filtroRegistrosProduccion"
+                    type="text"
+                    placeholder="Usuario, proceso, máquina, NP, producto o estado" />
+            </div>
+
+            <div class="dashboard-filter-actions">
+                <button class="btn-primary" id="btnFiltrarRegistrosProduccion">Filtrar</button>
+                <button class="btn-secondary" id="btnLimpiarRegistrosProduccion">Limpiar</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="module-title">Registros de producción</div>
+
+        <div class="table-container">
+            <table class="table" id="tablaRegistrosProduccion">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Usuario</th>
+                        <th>Proceso</th>
+                        <th>Máquina</th>
+                        <th>Formulario</th>
+                        <th>NP</th>
+                        <th>Producto</th>
+                        <th>Turno</th>
+                        <th>Estado</th>
+                        <th>Observación</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tbodyRegistrosProduccion">
+                    <tr>
+                        <td colspan="12">Cargando registros de producción...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

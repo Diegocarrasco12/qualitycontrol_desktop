@@ -5,19 +5,12 @@ namespace QualityControlCenter.Models
     public class User
     {
         public int Id { get; set; }
-
-        public string CodigoUsuario { get; set; } = string.Empty;
-
-        public string NombreCompleto { get; set; } = string.Empty;
-
-        public string PasswordHash { get; set; } = string.Empty;
-
-        public string Rol { get; set; } = "usuario";
-
-        public bool Activo { get; set; } = true;
-
-        public DateTime CreadoEn { get; set; }
-
-        public DateTime ActualizadoEn { get; set; }
+        public string CodigoUsuario { get; set; } = "";
+        public string NombreCompleto { get; set; } = "";
+        public string PasswordHash { get; set; } = "";
+        public string Rol { get; set; } = "";
+        public bool Activo { get; set; }
+        public DateTime? CreadoEn { get; set; }
+        public DateTime? ActualizadoEn { get; set; }
     }
 }

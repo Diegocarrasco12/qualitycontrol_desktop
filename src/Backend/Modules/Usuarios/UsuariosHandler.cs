@@ -99,7 +99,7 @@ namespace QualityControlCenter.Modules.Usuarios
             if (string.IsNullOrWhiteSpace(rol))
                 return Error("El rol es obligatorio");
 
-            if (rol != "admin" && rol != "admin_ti" && rol != "ti" && rol != "usuario")
+            if (rol != "admin" && rol != "operador")
                 return Error("Rol inválido");
 
             var existe = await _usuariosRepository.ExistsByCodigoUsuarioAsync(codigoUsuario);

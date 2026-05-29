@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
+using MySqlConnector;
 using QualityControlCenter.Models;
 using QualityControlCenter.Services;
-using MySqlConnector;
 
 namespace QualityControlCenter.Repositories.Auth
 {
@@ -16,24 +16,25 @@ namespace QualityControlCenter.Repositories.Auth
 
         public async Task<User?> GetByCodigoUsuarioAsync(string codigoUsuario)
         {
-            using var conn = _db.GetConsumoPapelConnection();
+            using var conn = _db.GetCalidadConnection();
             await conn.OpenAsync();
 
             const string sql =
-                @"
-                SELECT
-                    id,
-                    codigo_usuario,
-                    nombre_completo,
-                    password_hash,
-                    rol,
-                    activo,
-                    creado_en,
-                    actualizado_en
-                FROM usuarios_sistema
-                WHERE codigo_usuario = @codigoUsuario
-                LIMIT 1;
-            ";
+    @"
+    SELECT
+        id,
+        codigo_usuario,
+        nombre_completo,
+        password_hash,
+        rol,
+        activo,
+        creado_en,
+        creado_en AS actualizado_en
+    FROM usuarios
+    WHERE codigo_usuario = @codigoUsuario
+      AND activo = 1
+    LIMIT 1;
+";
 
             using var cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@codigoUsuario", codigoUsuario);

@@ -1,22 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Threading.Tasks;
-using QualityControlCenter.Modules.Altillo;
 using QualityControlCenter.Modules.Auth;
-using QualityControlCenter.Modules.Bins;
-using QualityControlCenter.Modules.BinsLavado;
-using QualityControlCenter.Modules.ConsumoPapel;
+using QualityControlCenter.Modules.Dashboard;
 using QualityControlCenter.Modules.Home;
-using QualityControlCenter.Modules.Paletizado;
-using QualityControlCenter.Modules.Palets;
+using QualityControlCenter.Modules.MaquinasSeguimiento;
+using QualityControlCenter.Modules.RegistrosControl;
+using QualityControlCenter.Modules.RegistrosProduccion;
 using QualityControlCenter.Modules.Usuarios;
 
 namespace QualityControlCenter.Services
 {
     public class MessageRouter
     {
-        private static bool _exportEnCurso = false;
         private readonly DbService _db;
         private readonly AuthHandler _authHandler;
         private readonly CurrentUserSessionService _session;
@@ -54,17 +53,6 @@ namespace QualityControlCenter.Services
                     return Error("Falta 'action'");
 
                 var action = data["action"]?.ToString();
-                // 🔥 BLOQUE GLOBAL DE EXPORT
-                if (action != null && action.Contains("exportarExcel"))
-                {
-                    if (_exportEnCurso)
-                    {
-                        Log("ERROR", "⚠ Export ya en curso bloqueado");
-                        return Error("Ya hay una exportación en proceso");
-                    }
-
-                    _exportEnCurso = true;
-                }
 
                 if (string.IsNullOrEmpty(action))
                     return Error("Acción vacía");
@@ -83,41 +71,6 @@ namespace QualityControlCenter.Services
 
                     rawResult = await _authHandler.Handle(action, authDataElement);
                 }
-                else if (action.StartsWith("consumo"))
-                {
-                    var handler = new ConsumoPapelHandler(_db);
-                    rawResult = await handler.Handle(action, data);
-                }
-                else if (action.StartsWith("altillo"))
-                {
-                    var handler = new AltilloHandler(_db);
-                    rawResult = await handler.Handle(action, data);
-                }
-                else if (action.StartsWith("binsLavado"))
-                {
-                    var handler = new BinsLavadoHandler(_db);
-                    rawResult = await handler.Handle(action, data);
-                }
-                else if (action.StartsWith("binsPrint"))
-                {
-                    var handler = new QualityControlCenter.Modules.BinsPrint.BinsPrintHandler();
-                    rawResult = await handler.Handle(action, data);
-                }
-                else if (action.StartsWith("bins"))
-                {
-                    var handler = new BinsHandler(_db);
-                    rawResult = await handler.Handle(action, data);
-                }
-                else if (action.StartsWith("palets"))
-                {
-                    var handler = new PaletsHandler(_db);
-                    rawResult = await handler.Handle(action, data);
-                }
-                else if (action.StartsWith("paletizado"))
-                {
-                    var handler = new PaletizadoHandler(_db);
-                    rawResult = await handler.Handle(action, data);
-                }
                 else if (action.StartsWith("inicio"))
                 {
                     var handler = new HomeHandler(_db);
@@ -128,16 +81,37 @@ namespace QualityControlCenter.Services
                     var handler = new UsuariosHandler(_db, _session);
                     rawResult = await handler.Handle(action, data);
                 }
+                else if (action.StartsWith("registrosControl"))
+                {
+                    var handler = new RegistrosControlHandler(_db);
+                    rawResult = await handler.Handle(action, data);
+                }
+                else if (action.StartsWith("registrosProduccion"))
+                {
+                    var handler = new RegistrosProduccionHandler(_db);
+                    rawResult = await handler.Handle(action, data);
+                }
+                else if (action == "excel.guardar")
+{
+    rawResult = GuardarExcel(data);
+}
+                else if (action.StartsWith("dashboard"))
+                {
+                    var handler = new DashboardHandler(_db);
+                    rawResult = await handler.Handle(action, data);
+                }
+                else if (action.StartsWith("maquinasSeguimiento"))
+                {
+                    var handler = new MaquinasSeguimientoHandler(_db);
+                    rawResult = await handler.Handle(action, data);
+                }
                 else
                 {
-                    return Error($"Acción no reconocida: {action}");
+                    return Error($"Acción no reconocida en QCC: {action}");
                 }
 
                 var normalized = NormalizeResponse(rawResult);
-                if (action != null && action.Contains("exportarExcel"))
-                {
-                    _exportEnCurso = false;
-                }
+
                 var duration = (DateTime.Now - startTime).TotalMilliseconds;
                 Log("SUCCESS", $"⏱ {action} en {duration}ms");
 
@@ -146,16 +120,94 @@ namespace QualityControlCenter.Services
             catch (Exception ex)
             {
                 Log("ERROR", $"❌ ROUTER ERROR: {ex.Message}");
-
-                // 🔥 liberar lock si era export
-                if (payloadJson != null && payloadJson.Contains("exportarExcel"))
-                {
-                    _exportEnCurso = false;
-                }
-
                 return Error(ex.Message);
             }
         }
+
+        private string GuardarExcel(Dictionary<string, object> data)
+{
+    try
+    {
+        if (!data.TryGetValue("data", out var rawData) || rawData is not JsonElement jsonData)
+        {
+            return JsonSerializer.Serialize(
+                new { ok = false, error = "Falta data para guardar Excel" },
+                _jsonOptions
+            );
+        }
+
+        var fileName = jsonData.GetProperty("fileName").GetString();
+        var base64 = jsonData.GetProperty("base64").GetString();
+
+        if (string.IsNullOrWhiteSpace(fileName))
+            fileName = $"qcc_export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+
+        if (string.IsNullOrWhiteSpace(base64))
+        {
+            return JsonSerializer.Serialize(
+                new { ok = false, error = "Excel vacío" },
+                _jsonOptions
+            );
+        }
+
+        fileName = Path.GetFileName(fileName);
+
+        if (!fileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+            fileName += ".xlsx";
+
+        var downloads = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Downloads"
+        );
+
+        if (!Directory.Exists(downloads))
+        {
+            downloads = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        }
+
+        var finalPath = Path.Combine(downloads, fileName);
+
+        if (File.Exists(finalPath))
+        {
+            var name = Path.GetFileNameWithoutExtension(fileName);
+            var ext = Path.GetExtension(fileName);
+            finalPath = Path.Combine(downloads, $"{name}_{DateTime.Now:yyyyMMdd_HHmmss}{ext}");
+        }
+
+        var bytes = Convert.FromBase64String(base64);
+        File.WriteAllBytes(finalPath, bytes);
+
+        try
+{
+    Process.Start(new ProcessStartInfo
+    {
+        FileName = finalPath,
+        UseShellExecute = true
+    });
+}
+catch
+{
+}
+        return JsonSerializer.Serialize(
+            new
+            {
+                ok = true,
+                data = new
+                {
+                    path = finalPath
+                }
+            },
+            _jsonOptions
+        );
+    }
+    catch (Exception ex)
+    {
+        return JsonSerializer.Serialize(
+            new { ok = false, error = ex.Message },
+            _jsonOptions
+        );
+    }
+}
 
         private string NormalizeResponse(string raw)
         {
@@ -178,7 +230,6 @@ namespace QualityControlCenter.Services
                 using var doc = JsonDocument.Parse(raw);
                 var root = doc.RootElement;
 
-                // ✅ CASO NORMAL: ya viene con { ok: true/false }
                 if (root.TryGetProperty("ok", out var okProp))
                 {
                     var ok = okProp.GetBoolean();
@@ -187,7 +238,7 @@ namespace QualityControlCenter.Services
                         new
                         {
                             ok = ok,
-                            success = ok, // 🔥 compatibilidad frontend
+                            success = ok,
                             data = root.TryGetProperty("data", out var dataProp)
                                 ? JsonSerializer.Deserialize<object>(dataProp.GetRawText())
                                 : null,
@@ -199,7 +250,6 @@ namespace QualityControlCenter.Services
                     );
                 }
 
-                // ✅ CASO: respuesta simple (sin estructura)
                 return JsonSerializer.Serialize(
                     new
                     {
@@ -213,7 +263,6 @@ namespace QualityControlCenter.Services
             }
             catch
             {
-                // ✅ fallback extremo
                 return JsonSerializer.Serialize(
                     new
                     {

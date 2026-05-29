@@ -8,7 +8,7 @@ namespace QualityControlCenter.Backend.Services
 {
     public class UpdateService
     {
-        private const string LatestJsonPath = @"\\192.168.1.71\LCC_Updates\latest.json";
+        private const string LatestJsonPath = @"\\192.168.1.71\Qcontrol_Updates\latest.json";
 
         public string GetCurrentVersion()
         {

@@ -1,5 +1,6 @@
-using System.Text.Json;
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using QualityControlCenter.Services;
 
@@ -18,7 +19,7 @@ namespace QualityControlCenter.Modules.Home
         {
             try
             {
-                Console.WriteLine($"📥 ACTION: {action}");
+                Console.WriteLine($"📥 ACTION HOME: {action}");
 
                 switch (action)
                 {
@@ -36,67 +37,76 @@ namespace QualityControlCenter.Modules.Home
             }
         }
 
-        // =========================
-        // DASHBOARD
-        // =========================
         private async Task<string> ObtenerDashboard()
-{
-    var total = await _service.GetDashboard();        // histórico
-var semana = await _service.GetUltimos7Dias();    // últimos 7 días
-var hoy = await _service.GetHoy();                // hoy
+        {
+            var total = await _service.GetDashboard();
+            var semana = await _service.GetUltimos7Dias();
+            var hoy = await _service.GetHoy();
 
-var actividad = await _service.ObtenerActividadReciente();
-var alertas = await _service.ObtenerAlertas();
+            var registros7Dias = await _service.ObtenerRegistrosUltimos7Dias();
+            var estadosHoy = await _service.ObtenerEstadosHoy();
 
-return Ok(new
-{
-    total = new {
-        bins = total.bins,
-        lavado = total.lavado,
-        palets = total.palets,
-        consumo = total.consumo,
-        altillo = total.altillo
-    },
-    semana = new {
-        bins = semana.bins,
-        lavado = semana.lavado,
-        palets = semana.palets,
-        consumo = semana.consumo,
-        altillo = semana.altillo
-    },
-    hoy = new {
-        bins = hoy.bins,
-        lavado = hoy.lavado,
-        palets = hoy.palets,
-        consumo = hoy.consumo,
-        altillo = hoy.altillo
-    },
-    actividad = actividad,
-    alertas = alertas
-});
-}
+            var actividad = await _service.ObtenerActividadReciente();
+            var alertas = await _service.ObtenerAlertas();
 
-        // =========================
-        // RESPUESTAS STANDARD
-        // =========================
+            return Ok(new
+            {
+                total = new
+                {
+                    bins = total.bins,
+                    lavado = total.lavado,
+                    palets = total.palets,
+                    consumo = total.consumo,
+                    altillo = total.altillo
+                },
+
+                semana = new
+                {
+                    bins = semana.bins,
+                    lavado = semana.lavado,
+                    palets = semana.palets,
+                    consumo = semana.consumo,
+                    altillo = semana.altillo
+                },
+
+                hoy = new
+                {
+                    bins = hoy.bins,
+                    lavado = hoy.lavado,
+                    palets = hoy.palets,
+                    consumo = hoy.consumo,
+                    altillo = hoy.altillo
+                },
+
+                registros7Dias,
+                estadosHoy,
+                actividad,
+                alertas
+            });
+        }
+
         private string Ok(object? data)
         {
-            return JsonSerializer.Serialize(new
-            {
-                ok = true,
-                data,
-                error = (string?)null
-            });
+            return JsonSerializer.Serialize(
+                new
+                {
+                    ok = true,
+                    data,
+                    error = (string?)null
+                }
+            );
         }
 
         private string Error(string message)
         {
-            return JsonSerializer.Serialize(new
-            {
-                ok = false,
-                data = (object?)null,
-                error = message
-            });
+            return JsonSerializer.Serialize(
+                new
+                {
+                    ok = false,
+                    data = (object?)null,
+                    error = message
+                }
+            );
         }
     }
 }

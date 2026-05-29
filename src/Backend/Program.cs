@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Photino.NET;
 using QualityControlCenter.Backend.Services;
 using QualityControlCenter.Config;
 using QualityControlCenter.Modules.Auth;
 using QualityControlCenter.Repositories.Auth;
 using QualityControlCenter.Services;
-using Photino.NET;
 
 namespace QualityControlCenter
 {
@@ -19,7 +19,8 @@ namespace QualityControlCenter
         [STAThread]
         static void Main(string[] args)
         {
-            Console.WriteLine("🚀 Iniciando Logistic Control Center...");
+            Console.WriteLine("Iniciando Quality Control Center...");
+            Console.WriteLine(PasswordHelper.Hash("1234"));
 
             try
             {
@@ -71,7 +72,7 @@ namespace QualityControlCenter
                 // 🖥 VENTANA
                 // =========================
                 var window = new PhotinoWindow()
-                    .SetTitle("Logistic Control Center")
+                    .SetTitle("Quality Control Center")
                     .SetUseOsDefaultSize(true)
                     .Center()
                     .SetChromeless(false)
@@ -146,7 +147,7 @@ namespace QualityControlCenter
                     {
                         MessageBoxW(
                             IntPtr.Zero,
-                            $"Hemos detectado una actualización disponible.\n\nVersión nueva: {updateInfo.Version}\n\nSe iniciará el instalador para actualizar Logistic Control Center.",
+                            $"Hemos detectado una actualización disponible.\n\nVersión nueva: {updateInfo.Version}\n\nSe iniciará el instalador para actualizar Quality Control Center.",
                             "Actualización disponible",
                             0
                         );

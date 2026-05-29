@@ -61,7 +61,7 @@ console.log("🔥 APP INICIO");
                     refreshSidebarState();
                 }
                 // 🔥 cargar HTML
-                const html = loadHtml(`modules/${moduleName}/${moduleName}.view.html`);
+                const html = loadHtml(`./modules/${moduleName}/${moduleName}.view.html`);
 
                 container.innerHTML = html;
 
@@ -117,14 +117,21 @@ console.log("🔥 APP INICIO");
                 // 🔥 CARGAR CONTROLLER
                 // =========================
 
-                const oldScript = document.getElementById("module-script");
-                if (oldScript) oldScript.remove();
+                try {
+                    const controllerPath = `./modules/${moduleName}/${moduleName}.controller.js`;
 
-                const script = document.createElement("script");
-                script.id = "module-script";
-                script.src = `modules/${moduleName}/${moduleName}.controller.js`;
+                    const controllerCode = loadHtml(controllerPath);
 
-                script.onload = () => {
+                    const oldScript = document.getElementById("module-script");
+                    if (oldScript) oldScript.remove();
+
+                    const script = document.createElement("script");
+                    script.id = "module-script";
+                    script.type = "text/javascript";
+                    script.textContent = controllerCode;
+
+                    document.body.appendChild(script);
+
                     console.log("✔ Controller cargado");
 
                     const controllerName = moduleName
@@ -133,31 +140,20 @@ console.log("🔥 APP INICIO");
                         .join("") + "Controller";
 
                     if (window[controllerName]) {
-                        try {
+                        App.currentController = new window[controllerName]();
+                        App.currentController.init();
 
-
-                            App.currentController = new window[controllerName]();
-                            App.currentController.init();
-
-                            // 🔥 OCULTAR SPLASH AL CARGAR EL PRIMER MÓDULO VÁLIDO
-                            if (moduleName === "inicio" || moduleName === "auth") {
-                                setTimeout(() => hideSplash(), 300);
-                            }
-
-                        } catch (err) {
-                            console.error("❌ Error ejecutando controller:", err);
+                        if (moduleName === "inicio" || moduleName === "auth") {
+                            setTimeout(() => hideSplash(), 300);
                         }
                     } else {
                         console.warn("⚠ Controller no encontrado:", controllerName);
                     }
-                };
 
-                script.onerror = () => {
-                    console.error("❌ Error cargando controller JS:", moduleName);
+                } catch (err) {
+                    console.error("❌ Error cargando controller JS:", moduleName, err);
                     alert("Error cargando controller: " + moduleName);
-                };
-
-                document.body.appendChild(script);
+                }
 
                 this.currentModule = moduleName;
 

@@ -6,6 +6,7 @@ window.UsuariosController = class UsuariosController {
         this.message = document.getElementById("usuarios-message");
 
         this.formCard = document.getElementById("usuarios-form-card");
+
         this.btnNuevoUsuario = document.getElementById("btnNuevoUsuario");
         this.btnGuardarUsuario = document.getElementById("btnGuardarUsuario");
         this.btnCancelarUsuario = document.getElementById("btnCancelarUsuario");
@@ -13,6 +14,7 @@ window.UsuariosController = class UsuariosController {
         this.inputCodigo = document.getElementById("nuevoCodigoUsuario");
         this.inputNombre = document.getElementById("nuevoNombreCompleto");
         this.inputPassword = document.getElementById("nuevoPassword");
+
         this.selectRol = document.getElementById("nuevoRol");
         this.selectActivo = document.getElementById("nuevoActivo");
 
@@ -38,6 +40,42 @@ window.UsuariosController = class UsuariosController {
                 await this.createUsuario();
             });
         }
+
+        const btnExportar = document.getElementById("btnExportarUsuarios");
+
+        if (btnExportar) {
+            btnExportar.addEventListener("click", () => {
+                if (window.__qccExportingExcel === true) {
+                    console.warn("⛔ Exportación ya en curso");
+                    return;
+                }
+
+                window.__qccExportingExcel = true;
+
+                try {
+                    window.ExcelExporter.exportTable({
+                        tableSelector: "#tablaUsuarios",
+                        fileName: `qcc_usuarios_${Date.now()}.xlsx`,
+                        sheetName: "Usuarios",
+                        title: "QCC - Gestión de Usuarios"
+                    });
+
+                    if (window.showToast) {
+                        window.showToast("Excel exportado correctamente", "success");
+                    }
+                } catch (err) {
+                    console.error("❌ Error exportando usuarios:", err);
+
+                    if (window.showToast) {
+                        window.showToast("Error exportando Excel", "error");
+                    }
+                } finally {
+                    setTimeout(() => {
+                        window.__qccExportingExcel = false;
+                    }, 1200);
+                }
+            });
+        }
     }
 
     async loadUsuarios() {
@@ -49,8 +87,12 @@ window.UsuariosController = class UsuariosController {
 
             console.log("👥 usuarios.list response:", response);
 
-            if (!response.ok) {
-                this.showMessage(response.error || "No se pudieron cargar los usuarios", false);
+            if (!response || response.ok !== true) {
+                this.showMessage(
+                    response?.error || "No se pudieron cargar los usuarios",
+                    false
+                );
+
                 this.renderEmpty("Error al cargar usuarios");
                 return;
             }
@@ -58,7 +100,12 @@ window.UsuariosController = class UsuariosController {
             this.renderTable(response.data || []);
         } catch (error) {
             console.error("❌ Error cargando usuarios:", error);
-            this.showMessage("Error de conexión al cargar usuarios", false);
+
+            this.showMessage(
+                "Error de conexión al cargar usuarios",
+                false
+            );
+
             this.renderEmpty("Error de conexión");
         }
     }
@@ -66,47 +113,80 @@ window.UsuariosController = class UsuariosController {
     renderTable(usuarios) {
         if (!this.tableBody) return;
 
-        if (!usuarios.length) {
+        if (!usuarios || !usuarios.length) {
             this.renderEmpty("No hay usuarios registrados");
             return;
         }
 
+        console.log("USUARIOS DATA:", usuarios);
+
         this.tableBody.innerHTML = usuarios.map(usuario => `
             <tr>
-                <td>${usuario.Id}</td>
-                <td>${this.escapeHtml(usuario.CodigoUsuario || "")}</td>
-                <td>${this.escapeHtml(usuario.NombreCompleto || "")}</td>
-                <td>${this.escapeHtml(usuario.Rol || "")}</td>
-                <td>${usuario.Activo ? "Sí" : "No"}</td>
-                <td>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button
-            class="btn-primary btn-reset-password"
-            data-id="${usuario.Id}"
-            data-nombre="${this.escapeHtml(usuario.NombreCompleto || usuario.CodigoUsuario || "")}"
-        >
-            Resetear clave
-        </button>
+                <td>${usuario.Id ?? "-"}</td>
 
-        <button
-            class="btn-secondary btn-eliminar-usuario"
-            data-id="${usuario.Id}"
-            data-nombre="${this.escapeHtml(usuario.NombreCompleto || usuario.CodigoUsuario || "")}"
-        >
-            Eliminar
-        </button>
-    </div>
-</td>
+                <td>
+                    ${this.escapeHtml(usuario.CodigoUsuario || "-")}
+                </td>
+
+                <td>
+                    ${this.escapeHtml(usuario.NombreCompleto || "-")}
+                </td>
+
+                <td>
+                    ${this.escapeHtml(usuario.Rol || "-")}
+                </td>
+
+                <td>
+                    ${usuario.Activo ? "Sí" : "No"}
+                </td>
+
+                <td>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button
+                            class="btn-primary btn-reset-password"
+                            data-id="${usuario.Id}"
+                            data-nombre="${this.escapeHtml(
+                                usuario.NombreCompleto ||
+                                usuario.CodigoUsuario ||
+                                ""
+                            )}"
+                        >
+                            Resetear clave
+                        </button>
+
+                        <button
+                            class="btn-secondary btn-eliminar-usuario"
+                            data-id="${usuario.Id}"
+                            data-nombre="${this.escapeHtml(
+                                usuario.NombreCompleto ||
+                                usuario.CodigoUsuario ||
+                                ""
+                            )}"
+                        >
+                            Eliminar
+                        </button>
+                    </div>
+                </td>
             </tr>
         `).join("");
 
-        const resetButtons = this.tableBody.querySelectorAll(".btn-reset-password");
-        const deleteButtons = this.tableBody.querySelectorAll(".btn-eliminar-usuario");
+        this.bindTableEvents();
+    }
+
+    bindTableEvents() {
+        const resetButtons =
+            this.tableBody.querySelectorAll(".btn-reset-password");
+
+        const deleteButtons =
+            this.tableBody.querySelectorAll(".btn-eliminar-usuario");
 
         resetButtons.forEach(btn => {
             btn.addEventListener("click", async () => {
                 const id = btn.getAttribute("data-id");
-                const nombre = btn.getAttribute("data-nombre") || "este usuario";
+
+                const nombre =
+                    btn.getAttribute("data-nombre") || "este usuario";
+
                 await this.resetPassword(id, nombre);
             });
         });
@@ -114,7 +194,10 @@ window.UsuariosController = class UsuariosController {
         deleteButtons.forEach(btn => {
             btn.addEventListener("click", async () => {
                 const id = btn.getAttribute("data-id");
-                const nombre = btn.getAttribute("data-nombre") || "este usuario";
+
+                const nombre =
+                    btn.getAttribute("data-nombre") || "este usuario";
+
                 await this.deleteUsuario(id, nombre);
             });
         });
@@ -126,21 +209,41 @@ window.UsuariosController = class UsuariosController {
         this.tableBody.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align:center; opacity:0.6;">
-                    ${text}
+                    ${this.escapeHtml(text)}
                 </td>
             </tr>
         `;
     }
 
     async createUsuario() {
-        const codigoUsuario = this.inputCodigo?.value.trim() || "";
-        const nombreCompleto = this.inputNombre?.value.trim() || "";
-        const password = this.inputPassword?.value || "";
-        const rol = this.selectRol?.value || "usuario";
-        const activo = this.selectActivo?.value === "true";
+        const codigoUsuario =
+            this.inputCodigo?.value.trim() || "";
+
+        const nombreCompleto =
+            this.inputNombre?.value.trim() || "";
+
+        const password =
+            this.inputPassword?.value || "";
+
+        const rol =
+            this.selectRol?.value || "operador";
+
+        const activo =
+            this.selectActivo?.value === "true";
 
         if (!codigoUsuario || !nombreCompleto || !password) {
-            this.showMessage("Completa todos los campos obligatorios", false);
+            this.showMessage(
+                "Completa todos los campos obligatorios",
+                false
+            );
+            return;
+        }
+
+        if (password.length < 6) {
+            this.showMessage(
+                "La contraseña debe tener al menos 6 caracteres",
+                false
+            );
             return;
         }
 
@@ -158,25 +261,38 @@ window.UsuariosController = class UsuariosController {
 
             console.log("👥 usuarios.create response:", response);
 
-            if (!response.ok) {
-                this.showMessage(response.error || "No se pudo crear el usuario", false);
+            if (!response || response.ok !== true) {
+                this.showMessage(
+                    response?.error || "No se pudo crear el usuario",
+                    false
+                );
                 return;
             }
 
-            this.showMessage("Usuario creado correctamente", true);
+            this.showMessage(
+                "Usuario creado correctamente",
+                true
+            );
+
             this.clearForm();
             this.hideForm();
+
             await this.loadUsuarios();
         } catch (error) {
             console.error("❌ Error creando usuario:", error);
-            this.showMessage("Error de conexión al crear usuario", false);
+
+            this.showMessage(
+                "Error de conexión al crear usuario",
+                false
+            );
         }
     }
 
     async deleteUsuario(id, nombre) {
         if (!id) return;
 
-        const confirmado = window.confirm(`¿Eliminar al usuario "${nombre}"?`);
+        const confirmado =
+            window.confirm(`¿Eliminar al usuario "${nombre}"?`);
 
         if (!confirmado) return;
 
@@ -190,16 +306,27 @@ window.UsuariosController = class UsuariosController {
 
             console.log("👥 usuarios.delete response:", response);
 
-            if (!response.ok) {
-                this.showMessage(response.error || "No se pudo eliminar el usuario", false);
+            if (!response || response.ok !== true) {
+                this.showMessage(
+                    response?.error || "No se pudo eliminar el usuario",
+                    false
+                );
                 return;
             }
 
-            this.showMessage("Usuario eliminado correctamente", true);
+            this.showMessage(
+                "Usuario eliminado correctamente",
+                true
+            );
+
             await this.loadUsuarios();
         } catch (error) {
             console.error("❌ Error eliminando usuario:", error);
-            this.showMessage("Error de conexión al eliminar usuario", false);
+
+            this.showMessage(
+                "Error de conexión al eliminar usuario",
+                false
+            );
         }
     }
 
@@ -215,12 +342,18 @@ window.UsuariosController = class UsuariosController {
         const passwordLimpia = nuevaPassword.trim();
 
         if (!passwordLimpia) {
-            this.showMessage("La nueva contraseña es obligatoria", false);
+            this.showMessage(
+                "La nueva contraseña es obligatoria",
+                false
+            );
             return;
         }
 
         if (passwordLimpia.length < 6) {
-            this.showMessage("La nueva contraseña debe tener al menos 6 caracteres", false);
+            this.showMessage(
+                "La nueva contraseña debe tener al menos 6 caracteres",
+                false
+            );
             return;
         }
 
@@ -241,15 +374,25 @@ window.UsuariosController = class UsuariosController {
 
             console.log("👥 usuarios.resetPassword response:", response);
 
-            if (!response.ok) {
-                this.showMessage(response.error || "No se pudo actualizar la contraseña", false);
+            if (!response || response.ok !== true) {
+                this.showMessage(
+                    response?.error || "No se pudo actualizar la contraseña",
+                    false
+                );
                 return;
             }
 
-            this.showMessage("Contraseña actualizada correctamente", true);
+            this.showMessage(
+                "Contraseña actualizada correctamente",
+                true
+            );
         } catch (error) {
             console.error("❌ Error actualizando contraseña:", error);
-            this.showMessage("Error de conexión al actualizar la contraseña", false);
+
+            this.showMessage(
+                "Error de conexión al actualizar la contraseña",
+                false
+            );
         }
     }
 
@@ -263,6 +406,7 @@ window.UsuariosController = class UsuariosController {
         if (this.formCard) {
             this.formCard.style.display = "none";
         }
+
         this.clearForm();
     }
 
@@ -270,8 +414,14 @@ window.UsuariosController = class UsuariosController {
         if (this.inputCodigo) this.inputCodigo.value = "";
         if (this.inputNombre) this.inputNombre.value = "";
         if (this.inputPassword) this.inputPassword.value = "";
-        if (this.selectRol) this.selectRol.value = "usuario";
-        if (this.selectActivo) this.selectActivo.value = "true";
+
+        if (this.selectRol) {
+            this.selectRol.value = "operador";
+        }
+
+        if (this.selectActivo) {
+            this.selectActivo.value = "true";
+        }
     }
 
     showMessage(text, success) {
@@ -281,11 +431,13 @@ window.UsuariosController = class UsuariosController {
         this.message.style.marginBottom = "12px";
         this.message.style.fontSize = "14px";
         this.message.style.fontWeight = "600";
-        this.message.style.color = success ? "#16a34a" : "#dc2626";
+
+        this.message.style.color =
+            success ? "#16a34a" : "#dc2626";
     }
 
     escapeHtml(text) {
-        return String(text)
+        return String(text ?? "")
             .replaceAll("&", "&amp;")
             .replaceAll("<", "&lt;")
             .replaceAll(">", "&gt;")

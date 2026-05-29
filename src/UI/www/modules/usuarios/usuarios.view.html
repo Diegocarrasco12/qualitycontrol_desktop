@@ -1,12 +1,14 @@
 <div class="module">
 
     <div class="module-header">
-        <h2 class="module-title">Gestión de Usuarios</h2>
+        <div>
+            <div class="module-title">Gestión de Usuarios</div>
+            <div class="subtitle">Administración de usuarios, roles y accesos del sistema</div>
+        </div>
 
         <div class="module-actions">
-            <button id="btnNuevoUsuario" class="btn-primary">
-                + Nuevo usuario
-            </button>
+            <button id="btnExportarUsuarios" class="btn-secondary">Exportar Excel</button>
+            <button id="btnNuevoUsuario" class="btn-primary">+ Nuevo usuario</button>
         </div>
     </div>
 
@@ -14,67 +16,76 @@
 
     <div id="usuarios-form-card" class="card" style="display: none;">
         <div class="module-header" style="margin-bottom: 16px;">
-            <h3 class="module-title" style="font-size: 18px;">Crear nuevo usuario</h3>
+            <div>
+                <div class="module-title" style="font-size: 18px;">Crear nuevo usuario</div>
+                <div class="subtitle">Completa los datos para agregar un usuario al sistema</div>
+            </div>
         </div>
 
-        <div class="filters" style="margin-bottom: 12px;">
-            <input type="text" id="nuevoCodigoUsuario" placeholder="Código de usuario" />
-            <input type="text" id="nuevoNombreCompleto" placeholder="Nombre completo" />
-            <input type="password" id="nuevoPassword" placeholder="Contraseña" />
+        <div class="filters usuarios-form-grid">
+            <div class="filter-field">
+                <label for="nuevoCodigoUsuario">Código de usuario</label>
+                <input type="text" id="nuevoCodigoUsuario" placeholder="Ej: PROD-OP3" />
+            </div>
 
-            <select id="nuevoRol" style="padding: 8px; border: 1px solid #CBD5E1; border-radius: 6px;">
-                <option value="usuario">usuario</option>
-                <option value="admin_ti">admin_ti</option>
-            </select>
+            <div class="filter-field">
+                <label for="nuevoNombreCompleto">Nombre completo</label>
+                <input type="text" id="nuevoNombreCompleto" placeholder="Nombre completo" />
+            </div>
 
-            <select id="nuevoActivo" style="padding: 8px; border: 1px solid #CBD5E1; border-radius: 6px;">
-                <option value="true">Activo</option>
-                <option value="false">Inactivo</option>
-            </select>
+            <div class="filter-field">
+                <label for="nuevoPassword">Contraseña</label>
+                <input type="password" id="nuevoPassword" placeholder="Mínimo 6 caracteres" />
+            </div>
+
+            <div class="filter-field">
+                <label for="nuevoRol">Rol</label>
+                <select id="nuevoRol">
+                    <option value="operador">operador</option>
+                    <option value="admin">admin</option>
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label for="nuevoActivo">Estado</label>
+                <select id="nuevoActivo">
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                </select>
+            </div>
         </div>
 
-        <div class="module-actions">
+        <div class="module-actions" style="margin-top: 16px;">
             <button id="btnGuardarUsuario" class="btn-primary">Guardar usuario</button>
             <button id="btnCancelarUsuario" class="btn-secondary">Cancelar</button>
         </div>
     </div>
-    <div id="usuarios-password-card" class="card" style="display: none; margin-top: 16px;">
-        <div class="module-header" style="margin-bottom: 16px;">
-            <h3 class="module-title" style="font-size: 18px;">Cambiar contraseña</h3>
-        </div>
 
-        <div class="filters" style="margin-bottom: 12px;">
-            <input type="text" id="passwordTargetUser" placeholder="Usuario" readonly />
-            <input type="password" id="nuevaPasswordManual" placeholder="Nueva contraseña" />
-            <input type="password" id="confirmarPasswordManual" placeholder="Confirmar contraseña" />
-        </div>
+    <div class="card">
+        <div class="module-title" style="font-size: 18px; margin-bottom: 14px;">Usuarios registrados</div>
 
-        <div class="module-actions">
-            <button id="btnGuardarNuevaPassword" class="btn-primary">Guardar nueva contraseña</button>
-            <button id="btnCancelarNuevaPassword" class="btn-secondary">Cancelar</button>
-        </div>
-    </div>
+        <div class="table-container">
+            <table class="table" id="tablaUsuarios">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Rol</th>
+                        <th>Activo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
 
-    <div class="table-container">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Rol</th>
-                    <th>Activo</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="usuarios-table-body">
-                <tr>
-                    <td colspan="6" style="text-align:center; opacity:0.6;">
-                        Cargando usuarios...
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                <tbody id="usuarios-table-body">
+                    <tr>
+                        <td colspan="6" style="text-align:center; opacity:0.6;">
+                            Cargando usuarios...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>

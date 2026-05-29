@@ -1,0 +1,93 @@
+<div class="module">
+
+  <div class="module-header">
+    <div>
+      <div class="module-title">Dashboard Calidad</div>
+      <div class="subtitle">Resumen operativo de controles, mermas y últimas actividades</div>
+    </div>
+
+    <div class="module-actions">
+      <button class="btn-secondary" id="btnExportarDashboard">Exportar Excel</button>
+      <button class="btn-primary" id="btnActualizarDashboard">Actualizar</button>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Controles hoy</div>
+      <div class="kpi-value" id="dashControlesHoy">0</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Merma insumos hoy</div>
+      <div class="kpi-value" id="dashMermaInsumos">0</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Merma proceso hoy</div>
+      <div class="kpi-value" id="dashMermaProceso">0</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Con observación hoy</div>
+      <div class="kpi-value" id="dashObservaciones">0</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="filters dashboard-filters">
+
+      <div class="filter-field">
+        <label for="dashboardFechaDesde">Fecha desde</label>
+        <input type="text" id="dashboardFechaDesde" placeholder="Seleccionar fecha" />
+      </div>
+
+      <div class="filter-field">
+        <label for="dashboardFechaHasta">Fecha hasta</label>
+        <input type="text" id="dashboardFechaHasta" placeholder="Seleccionar fecha" />
+      </div>
+
+      <div class="dashboard-filter-actions">
+        <button class="btn-primary" id="btnFiltrarDashboard">
+          Filtrar
+        </button>
+
+        <button class="btn-secondary" id="btnLimpiarDashboard">
+          Limpiar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="module-title">Últimos registros</div>
+
+    <div class="table-container">
+      <table class="table" id="tablaDashboardUltimos">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Usuario</th>
+            <th>Proceso</th>
+            <th>Máquina</th>
+            <th>Formulario</th>
+            <th>NP</th>
+            <th>Producto</th>
+            <th>Turno</th>
+            <th>Estado</th>
+            <th>Observación</th>
+          </tr>
+        </thead>
+
+        <tbody id="tbodyDashboardUltimos">
+          <tr>
+            <td colspan="12">Cargando...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
