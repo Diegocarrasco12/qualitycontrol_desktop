@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using QualityControlCenter.Modules.Auth;
@@ -92,9 +92,9 @@ namespace QualityControlCenter.Services
                     rawResult = await handler.Handle(action, data);
                 }
                 else if (action == "excel.guardar")
-{
-    rawResult = GuardarExcel(data);
-}
+                {
+                    rawResult = GuardarExcel(data);
+                }
                 else if (action.StartsWith("dashboard"))
                 {
                     var handler = new DashboardHandler(_db);
@@ -125,89 +125,86 @@ namespace QualityControlCenter.Services
         }
 
         private string GuardarExcel(Dictionary<string, object> data)
-{
-    try
-    {
-        if (!data.TryGetValue("data", out var rawData) || rawData is not JsonElement jsonData)
         {
-            return JsonSerializer.Serialize(
-                new { ok = false, error = "Falta data para guardar Excel" },
-                _jsonOptions
-            );
-        }
-
-        var fileName = jsonData.GetProperty("fileName").GetString();
-        var base64 = jsonData.GetProperty("base64").GetString();
-
-        if (string.IsNullOrWhiteSpace(fileName))
-            fileName = $"qcc_export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
-
-        if (string.IsNullOrWhiteSpace(base64))
-        {
-            return JsonSerializer.Serialize(
-                new { ok = false, error = "Excel vacío" },
-                _jsonOptions
-            );
-        }
-
-        fileName = Path.GetFileName(fileName);
-
-        if (!fileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
-            fileName += ".xlsx";
-
-        var downloads = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            "Downloads"
-        );
-
-        if (!Directory.Exists(downloads))
-        {
-            downloads = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-        }
-
-        var finalPath = Path.Combine(downloads, fileName);
-
-        if (File.Exists(finalPath))
-        {
-            var name = Path.GetFileNameWithoutExtension(fileName);
-            var ext = Path.GetExtension(fileName);
-            finalPath = Path.Combine(downloads, $"{name}_{DateTime.Now:yyyyMMdd_HHmmss}{ext}");
-        }
-
-        var bytes = Convert.FromBase64String(base64);
-        File.WriteAllBytes(finalPath, bytes);
-
-        try
-{
-    Process.Start(new ProcessStartInfo
-    {
-        FileName = finalPath,
-        UseShellExecute = true
-    });
-}
-catch
-{
-}
-        return JsonSerializer.Serialize(
-            new
+            try
             {
-                ok = true,
-                data = new
+                if (
+                    !data.TryGetValue("data", out var rawData)
+                    || rawData is not JsonElement jsonData
+                )
                 {
-                    path = finalPath
+                    return JsonSerializer.Serialize(
+                        new { ok = false, error = "Falta data para guardar Excel" },
+                        _jsonOptions
+                    );
                 }
-            },
-            _jsonOptions
-        );
-    }
-    catch (Exception ex)
-    {
-        return JsonSerializer.Serialize(
-            new { ok = false, error = ex.Message },
-            _jsonOptions
-        );
-    }
-}
+
+                var fileName = jsonData.GetProperty("fileName").GetString();
+                var base64 = jsonData.GetProperty("base64").GetString();
+
+                if (string.IsNullOrWhiteSpace(fileName))
+                    fileName = $"qcc_export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+
+                if (string.IsNullOrWhiteSpace(base64))
+                {
+                    return JsonSerializer.Serialize(
+                        new { ok = false, error = "Excel vacío" },
+                        _jsonOptions
+                    );
+                }
+
+                fileName = Path.GetFileName(fileName);
+
+                if (!fileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+                    fileName += ".xlsx";
+
+                var downloads = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    "Downloads"
+                );
+
+                if (!Directory.Exists(downloads))
+                {
+                    downloads = Environment.GetFolderPath(
+                        Environment.SpecialFolder.DesktopDirectory
+                    );
+                }
+
+                var finalPath = Path.Combine(downloads, fileName);
+
+                if (File.Exists(finalPath))
+                {
+                    var name = Path.GetFileNameWithoutExtension(fileName);
+                    var ext = Path.GetExtension(fileName);
+                    finalPath = Path.Combine(
+                        downloads,
+                        $"{name}_{DateTime.Now:yyyyMMdd_HHmmss}{ext}"
+                    );
+                }
+
+                var bytes = Convert.FromBase64String(base64);
+                File.WriteAllBytes(finalPath, bytes);
+
+                try
+                {
+                    Process.Start(
+                        new ProcessStartInfo { FileName = finalPath, UseShellExecute = true }
+                    );
+                }
+                catch { }
+                return JsonSerializer.Serialize(
+                    new { ok = true, data = new { path = finalPath } },
+                    _jsonOptions
+                );
+            }
+            catch (Exception ex)
+            {
+                return JsonSerializer.Serialize(
+                    new { ok = false, error = ex.Message },
+                    _jsonOptions
+                );
+            }
+        }
 
         private string NormalizeResponse(string raw)
         {

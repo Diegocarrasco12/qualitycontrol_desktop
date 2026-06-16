@@ -32,57 +32,49 @@ namespace QualityControlCenter.Modules.Home
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ ERROR HANDLER HOME: {ex}");
+                Console.WriteLine($"❌ ERROR HOME: {ex}");
+
                 return Error(ex.Message);
             }
         }
 
         private async Task<string> ObtenerDashboard()
         {
-            var total = await _service.GetDashboard();
-            var semana = await _service.GetUltimos7Dias();
-            var hoy = await _service.GetHoy();
+            var kpis = await _service.ObtenerKpis();
 
-            var registros7Dias = await _service.ObtenerRegistrosUltimos7Dias();
-            var estadosHoy = await _service.ObtenerEstadosHoy();
+            var desviaciones = await _service.ObtenerDesviacionesPorProceso();
 
-            var actividad = await _service.ObtenerActividadReciente();
-            var alertas = await _service.ObtenerAlertas();
+            var topDefectos = await _service.ObtenerTopDefectos();
 
-            return Ok(new
-            {
-                total = new
+            var alertas = await _service.ObtenerAlertasActivas();
+
+            var merma = await _service.ObtenerMermaPorProceso();
+
+            var maquinas = await _service.ObtenerMaquinasConMasDesviaciones();
+
+            var cumplimiento = await _service.ObtenerCumplimientoControles();
+
+            var tendencia = await _service.ObtenerTendenciaNoConformes();
+
+            var origen = await _service.ObtenerOrigenProblema();
+
+            var resumen = await _service.ObtenerResumenGeneral();
+
+            return Ok(
+                new
                 {
-                    bins = total.bins,
-                    lavado = total.lavado,
-                    palets = total.palets,
-                    consumo = total.consumo,
-                    altillo = total.altillo
-                },
-
-                semana = new
-                {
-                    bins = semana.bins,
-                    lavado = semana.lavado,
-                    palets = semana.palets,
-                    consumo = semana.consumo,
-                    altillo = semana.altillo
-                },
-
-                hoy = new
-                {
-                    bins = hoy.bins,
-                    lavado = hoy.lavado,
-                    palets = hoy.palets,
-                    consumo = hoy.consumo,
-                    altillo = hoy.altillo
-                },
-
-                registros7Dias,
-                estadosHoy,
-                actividad,
-                alertas
-            });
+                    kpis,
+                    desviaciones,
+                    topDefectos,
+                    alertas,
+                    merma,
+                    maquinas,
+                    cumplimiento,
+                    tendencia,
+                    origen,
+                    resumen,
+                }
+            );
         }
 
         private string Ok(object? data)
@@ -92,7 +84,7 @@ namespace QualityControlCenter.Modules.Home
                 {
                     ok = true,
                     data,
-                    error = (string?)null
+                    error = (string?)null,
                 }
             );
         }
@@ -104,7 +96,7 @@ namespace QualityControlCenter.Modules.Home
                 {
                     ok = false,
                     data = (object?)null,
-                    error = message
+                    error = message,
                 }
             );
         }

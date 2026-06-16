@@ -22,6 +22,10 @@ namespace QualityControlCenter.Modules.RegistrosControl
         public int EstadoId { get; set; }
         public string Estado { get; set; } = "";
 
+        public string EstadoValidacion { get; set; } = "PENDIENTE";
+        public string FechaValidacion { get; set; } = "";
+        public string UsuarioValidacion { get; set; } = "";
+
         public string Observacion { get; set; } = "";
 
         public string FechaRegistro { get; set; } = "";

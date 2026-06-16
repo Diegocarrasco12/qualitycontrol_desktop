@@ -2,79 +2,147 @@
 
     <div class="module-header">
         <div>
-            <div class="module-title">Panel de Control</div>
-            <div class="subtitle">Resumen general operativo de Quality Control Center</div>
+            <div class="module-title">Panel de Calidad</div>
+            <div class="subtitle">Resumen general del sistema</div>
         </div>
     </div>
 
+    <!-- KPIs SUPERIORES -->
     <div class="home-modules-grid">
 
         <div class="home-module-card" data-module-target="registros-control">
             <div>
-                <div class="home-module-card-title">📊 Total registros</div>
-                <div class="home-module-card-value" id="bins-count">0</div>
-                <div class="home-module-card-label">ver todos los registros</div>
+                <div class="home-module-card-title">📋 CONTROLES HOY</div>
+                <div class="home-module-card-value" id="kpi-controles-hoy">0</div>
+                <div class="home-module-card-label">
+                    <span id="kpi-controles-variacion">0%</span> vs ayer
+                </div>
             </div>
         </div>
 
-        <div class="home-module-card" data-module-target="dashboard">
+        <div class="home-module-card" data-module-target="registros-control">
             <div>
-                <div class="home-module-card-title">✅ Dashboard Calidad</div>
-                <div class="home-module-card-value" id="lavado-count">0</div>
-                <div class="home-module-card-label">resumen de calidad</div>
+                <div class="home-module-card-title">🛡️ NO CONFORMES (HOY)</div>
+                <div class="home-module-card-value" id="kpi-no-conformes-hoy">0</div>
+                <div class="home-module-card-label">
+                    <span id="kpi-no-conformes-variacion">0%</span> vs ayer
+                </div>
             </div>
         </div>
 
         <div class="home-module-card" data-module-target="registros-produccion">
             <div>
-                <div class="home-module-card-title">🏭 Registros Producción</div>
-                <div class="home-module-card-value" id="palets-count">0</div>
-                <div class="home-module-card-label">controles de producción</div>
+                <div class="home-module-card-title">📈 MERMA TOTAL (HOY)</div>
+                <div class="home-module-card-value" id="kpi-merma-hoy">0</div>
+                <div class="home-module-card-label">
+                    <span id="kpi-merma-variacion">0%</span> vs ayer
+                </div>
             </div>
         </div>
 
-        <div class="home-module-card" data-module-target="maquinas-seguimiento">
+        <div class="home-module-card" data-module-target="laboratorio">
             <div>
-                <div class="home-module-card-title">⚙️ Máquinas activas</div>
-                <div class="home-module-card-value" id="consumo-count">0</div>
-                <div class="home-module-card-label">seguimiento por máquina</div>
-            </div>
-        </div>
-
-        <div class="home-module-card" data-module-target="usuarios">
-            <div>
-                <div class="home-module-card-title">👥 Usuarios activos</div>
-                <div class="home-module-card-value" id="altillo-count">0</div>
-                <div class="home-module-card-label">usuarios habilitados</div>
+                <div class="home-module-card-title">🧪 LABORATORIO</div>
+                <div class="home-module-card-value" id="kpi-laboratorio-pendiente">0</div>
+                <div class="home-module-card-label">
+                    <span id="kpi-laboratorio-criticos">0</span> críticos
+                </div>
             </div>
         </div>
 
     </div>
 
+    <!-- FILA PRINCIPAL -->
     <div class="home-middle">
 
         <div class="card">
-            <div class="module-title">📊 Comparación Calidad - Producción</div>
-            <canvas id="chart-movimientos" style="height:300px;"></canvas>
+            <div class="module-title">Desviaciones por proceso (NC)</div>
+            <canvas id="chart-desviaciones-proceso"></canvas>
         </div>
 
         <div class="card">
-            <div class="module-title">📌 Estados de calidad hoy</div>
-            <canvas id="chart-distribucion" style="height:300px;"></canvas>
+            <div class="module-title">Top 5 defectos (últimos 30 días)</div>
+            <canvas id="chart-top-defectos"></canvas>
         </div>
 
     </div>
 
-    <div class="home-bottom">
+    <!-- ALERTAS -->
+    <div class="card">
+        <div class="module-title">Alertas activas</div>
+        <div id="alertas-activas" class="alert-box"></div>
+    </div>
+
+    <!-- FILA MEDIA -->
+    <div class="home-middle">
 
         <div class="card">
-            <div class="module-title">📋 Actividad reciente</div>
-            <div id="actividad-reciente"></div>
+            <div class="module-title">Merma por proceso (hoy)</div>
+            <canvas id="chart-merma-proceso"></canvas>
         </div>
 
         <div class="card">
-            <div class="module-title">⚠ Alertas del sistema</div>
-            <div id="alertas-list"></div>
+            <div class="module-title">Máquinas con más desviaciones (últimos 30 días)</div>
+            <div id="maquinas-desviaciones-list"></div>
+        </div>
+
+    </div>
+
+    <!-- FILA MEDIA 2 -->
+    <div class="home-middle">
+
+        <div class="card">
+            <div class="module-title">Cumplimiento de controles (hoy)</div>
+            <div id="cumplimiento-controles-list"></div>
+        </div>
+
+        <div class="card">
+            <div class="module-title">Origen del problema (últimos 30 días)</div>
+            <canvas id="chart-origen-problema"></canvas>
+        </div>
+
+    </div>
+
+    <!-- FILA FINAL -->
+    <div class="home-bottom">
+
+        <div class="card">
+            <div class="module-title">Tendencia de no conformes (últimos 30 días)</div>
+            <canvas id="chart-tendencia-no-conformes"></canvas>
+        </div>
+
+        <div class="card">
+            <div class="module-title">Resumen general (hoy)</div>
+
+            <div class="activity-item">
+                <span>Órdenes en producción</span>
+                <strong id="resumen-ordenes">0</strong>
+            </div>
+
+            <div class="activity-item">
+                <span>Controles programados</span>
+                <strong id="resumen-programados">0</strong>
+            </div>
+
+            <div class="activity-item">
+                <span>Controles realizados</span>
+                <strong id="resumen-realizados">0</strong>
+            </div>
+
+            <div class="activity-item">
+                <span>% Cumplimiento general</span>
+                <strong id="resumen-cumplimiento">0%</strong>
+            </div>
+
+            <div class="activity-item">
+                <span>No conformes abiertas</span>
+                <strong id="resumen-no-conformes">0</strong>
+            </div>
+
+            <div class="activity-item">
+                <span>Ensayos pendientes</span>
+                <strong id="resumen-ensayos">0</strong>
+            </div>
         </div>
 
     </div>

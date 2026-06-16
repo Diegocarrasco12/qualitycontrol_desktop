@@ -24,25 +24,96 @@ namespace QualityControlCenter.Modules.Dashboard
         {
             try
             {
-                if (action == "dashboard.obtenerResumen")
+                if (action == "dashboard.obtenerFiltros")
                 {
-                    var resumen = await _repository.ObtenerResumen();
+                    var filtros = await _repository.ObtenerFiltros();
 
                     return JsonSerializer.Serialize(
-                        new { ok = true, data = resumen },
+                        new
+                        {
+                            ok = true,
+                            data = filtros,
+                            error = (string?)null,
+                        },
+                        _jsonOptions
+                    );
+                }
+                if (action == "dashboard.obtenerResumen")
+                {
+                    var fechaDesde = "";
+                    var fechaHasta = "";
+                    var inspector = "";
+                    var turno = "";
+                    var proceso = "";
+
+                    if (
+                        data.TryGetValue("data", out var rawData) && rawData is JsonElement jsonData
+                    )
+                    {
+                        if (jsonData.TryGetProperty("fechaDesde", out var desdeProp))
+                        {
+                            fechaDesde = desdeProp.GetString() ?? "";
+                        }
+
+                        if (jsonData.TryGetProperty("fechaHasta", out var hastaProp))
+                        {
+                            fechaHasta = hastaProp.GetString() ?? "";
+                        }
+
+                        if (jsonData.TryGetProperty("inspector", out var inspectorProp))
+                        {
+                            inspector = inspectorProp.GetString() ?? "";
+                        }
+
+                        if (jsonData.TryGetProperty("turno", out var turnoProp))
+                        {
+                            turno = turnoProp.GetString() ?? "";
+                        }
+
+                        if (jsonData.TryGetProperty("proceso", out var procesoProp))
+                        {
+                            proceso = procesoProp.GetString() ?? "";
+                        }
+                    }
+
+                    var resumen = await _repository.ObtenerResumen(
+                        fechaDesde,
+                        fechaHasta,
+                        inspector,
+                        turno,
+                        proceso
+                    );
+
+                    return JsonSerializer.Serialize(
+                        new
+                        {
+                            ok = true,
+                            data = resumen,
+                            error = (string?)null,
+                        },
                         _jsonOptions
                     );
                 }
 
                 return JsonSerializer.Serialize(
-                    new { ok = false, error = $"Acción dashboard no reconocida: {action}" },
+                    new
+                    {
+                        ok = false,
+                        data = (object?)null,
+                        error = $"Acción dashboard no reconocida: {action}",
+                    },
                     _jsonOptions
                 );
             }
             catch (Exception ex)
             {
                 return JsonSerializer.Serialize(
-                    new { ok = false, error = ex.Message },
+                    new
+                    {
+                        ok = false,
+                        data = (object?)null,
+                        error = ex.Message,
+                    },
                     _jsonOptions
                 );
             }

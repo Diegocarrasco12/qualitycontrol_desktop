@@ -63,11 +63,10 @@ namespace QualityControlCenter.Repositories.RegistrosControl
                 parameters.Add(new MySqlParameter("@estado", estado));
             }
 
-            var whereSql = where.Count > 0
-                ? "WHERE " + string.Join(" AND ", where)
-                : "";
+            var whereSql = where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "";
 
-            var countSql = $@"
+            var countSql =
+                $@"
                 SELECT COUNT(*)
                 FROM registros_control rc
                 INNER JOIN usuarios u ON u.id = rc.usuario_id
@@ -84,7 +83,8 @@ namespace QualityControlCenter.Repositories.RegistrosControl
                 var totalObj = await countCmd.ExecuteScalarAsync();
                 var total = Convert.ToInt32(totalObj);
 
-                var sql = $@"
+                var sql =
+                    $@"
                     SELECT
                         rc.id,
                         rc.usuario_id,
@@ -126,28 +126,30 @@ namespace QualityControlCenter.Repositories.RegistrosControl
 
                 while (await reader.ReadAsync())
                 {
-                    items.Add(new RegistroControlItem
-                    {
-                        Id = reader.GetInt32("id"),
-                        UsuarioId = reader.GetInt32("usuario_id"),
-                        Usuario = reader.GetString("usuario"),
-                        ProcesoId = reader.GetInt32("proceso_id"),
-                        Proceso = reader.GetString("proceso"),
-                        MaquinaId = reader.GetInt32("maquina_id"),
-                        Maquina = reader.GetString("maquina"),
-                        FormularioId = reader.IsDBNull(reader.GetOrdinal("formulario_id"))
-                            ? null
-                            : reader.GetInt32("formulario_id"),
-                        Formulario = reader.GetString("formulario"),
-                        Np = reader.GetString("np"),
-                        Turno = reader.GetString("turno"),
-                        EstadoId = reader.GetInt32("estado_id"),
-                        Estado = reader.GetString("estado"),
-                        Observacion = reader.GetString("observacion"),
-                        FechaRegistro = reader.GetString("fecha_registro"),
-                        HoraRegistro = reader.GetString("hora_registro"),
-                        CreadoEn = reader.GetString("creado_en")
-                    });
+                    items.Add(
+                        new RegistroControlItem
+                        {
+                            Id = reader.GetInt32("id"),
+                            UsuarioId = reader.GetInt32("usuario_id"),
+                            Usuario = reader.GetString("usuario"),
+                            ProcesoId = reader.GetInt32("proceso_id"),
+                            Proceso = reader.GetString("proceso"),
+                            MaquinaId = reader.GetInt32("maquina_id"),
+                            Maquina = reader.GetString("maquina"),
+                            FormularioId = reader.IsDBNull(reader.GetOrdinal("formulario_id"))
+                                ? null
+                                : reader.GetInt32("formulario_id"),
+                            Formulario = reader.GetString("formulario"),
+                            Np = reader.GetString("np"),
+                            Turno = reader.GetString("turno"),
+                            EstadoId = reader.GetInt32("estado_id"),
+                            Estado = reader.GetString("estado"),
+                            Observacion = reader.GetString("observacion"),
+                            FechaRegistro = reader.GetString("fecha_registro"),
+                            HoraRegistro = reader.GetString("hora_registro"),
+                            CreadoEn = reader.GetString("creado_en"),
+                        }
+                    );
                 }
 
                 return (items, total);

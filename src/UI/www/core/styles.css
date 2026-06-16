@@ -1252,3 +1252,183 @@ body {
 
     transition: width 0.25s ease;
 }
+
+/* =====================================================
+   QCC INICIO - DASHBOARD MOCKUP
+===================================================== */
+
+.home-module {
+    gap: 18px;
+}
+
+.home-module .home-modules-grid {
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+}
+
+.home-module .home-middle {
+    grid-template-columns: 1fr 1fr;
+}
+
+.home-module .home-bottom {
+    grid-template-columns: 2fr 1fr;
+}
+
+.home-module .home-module-card {
+    min-height: 120px;
+}
+
+.home-module .card {
+    min-height: 260px;
+}
+
+.home-module #alertas-activas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+}
+
+.home-module .alert-ok {
+    background: #ECFDF5;
+    color: #166534;
+    padding: 12px;
+    border-radius: 10px;
+    border-left: 4px solid #22C55E;
+    font-size: 13px;
+}
+
+.home-module .activity-item strong {
+    color: #0F172A;
+}
+
+@media (max-width: 1400px) {
+    .home-module .home-modules-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .home-module #alertas-activas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+
+    .home-module .home-modules-grid,
+    .home-module .home-middle,
+    .home-module .home-bottom,
+    .home-module #alertas-activas {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =====================================================
+   DASHBOARD CALIDAD - LAYOUT MOCKUP COMPACTO
+===================================================== */
+
+.dashboard-calidad-module {
+    gap: 14px;
+}
+
+.dashboard-calidad-module .kpi-row {
+    margin-bottom: 0;
+}
+
+.dashboard-calidad-module .card {
+    overflow: hidden;
+}
+
+/* Filtros */
+.dashboard-calidad-module .dashboard-filters {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(150px, 1fr)) auto;
+    gap: 14px;
+    align-items: end;
+}
+
+.dashboard-calidad-module .filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dashboard-calidad-module .filter-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.dashboard-calidad-module .filter-field input,
+.dashboard-calidad-module .filter-field select {
+    height: 40px;
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0 10px;
+    background: white;
+}
+
+.dashboard-calidad-module .dashboard-filter-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Grid de gráficos */
+.dashboard-calidad-module .dashboard-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.dashboard-calidad-module .dashboard-charts-grid-2 {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 16px;
+}
+
+/* Cards de gráficos */
+.dashboard-calidad-module .dashboard-chart-card {
+    min-height: 300px;
+    max-height: 340px;
+    padding: 18px;
+}
+
+.dashboard-calidad-module .dashboard-chart-card canvas {
+    width: 100% !important;
+    height: 230px !important;
+    max-height: 230px !important;
+    display: block;
+}
+
+/* Tablas */
+.dashboard-calidad-module .table-container {
+    max-height: 360px;
+}
+
+/* Las cards de tabla sí pueden crecer */
+.dashboard-calidad-module .card:has(.table-container) {
+    max-height: none;
+}
+
+/* Responsive */
+@media (max-width: 1300px) {
+    .dashboard-calidad-module .dashboard-filters {
+        grid-template-columns: repeat(3, minmax(150px, 1fr));
+    }
+
+    .dashboard-calidad-module .dashboard-charts-grid,
+    .dashboard-calidad-module .dashboard-charts-grid-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+
+    .dashboard-calidad-module .dashboard-filters,
+    .dashboard-calidad-module .dashboard-charts-grid,
+    .dashboard-calidad-module .dashboard-charts-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+.dashboard-calidad-module .dashboard-filters-card {
+    min-height: auto;
+    max-height: none;
+    padding: 18px;
+}
