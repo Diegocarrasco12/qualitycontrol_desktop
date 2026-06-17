@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using QualityControlCenter.Modules.Auth;
 using QualityControlCenter.Modules.Dashboard;
 using QualityControlCenter.Modules.Home;
+using QualityControlCenter.Modules.Laboratorio;
 using QualityControlCenter.Modules.MaquinasSeguimiento;
 using QualityControlCenter.Modules.RegistrosControl;
 using QualityControlCenter.Modules.RegistrosProduccion;
@@ -89,6 +90,11 @@ namespace QualityControlCenter.Services
                 else if (action.StartsWith("registrosProduccion"))
                 {
                     var handler = new RegistrosProduccionHandler(_db);
+                    rawResult = await handler.Handle(action, data);
+                }
+                else if (action.StartsWith("laboratorio"))
+                {
+                    var handler = new LaboratorioHandler(_db);
                     rawResult = await handler.Handle(action, data);
                 }
                 else if (action == "excel.guardar")
