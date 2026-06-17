@@ -41,10 +41,12 @@ if (!window.DashboardController) {
       this._clickHandler = (e) => {
         if (e.target.id === "btnActualizarDashboard") {
           this.cargarDatos()
+          return
         }
 
         if (e.target.id === "btnFiltrarDashboard") {
           this.cargarDatos()
+          return
         }
 
         if (e.target.id === "btnLimpiarDashboard") {
@@ -53,11 +55,75 @@ if (!window.DashboardController) {
 
           if (desde?._flatpickr) desde._flatpickr.clear()
           if (hasta?._flatpickr) hasta._flatpickr.clear()
+
           document.getElementById("dashboardInspector").value = ""
           document.getElementById("dashboardTurno").value = ""
           document.getElementById("dashboardProceso").value = ""
 
           this.cargarDatos()
+          return
+        }
+
+        if (e.target.classList.contains("btn-validar-registro")) {
+          const id = Number(e.target.dataset.id)
+
+          window.PhotinoBridge.send({
+            action: "dashboard.validarRegistro",
+            id
+          }).then(() => {
+            this.cargarDatos()
+          })
+
+          return
+        }
+
+        if (e.target.classList.contains("btn-rechazar-registro")) {
+          const id = Number(e.target.dataset.id)
+
+          window.PhotinoBridge.send({
+            action: "dashboard.rechazarRegistro",
+            id
+          }).then(() => {
+            this.cargarDatos()
+          })
+
+          return
+        }
+
+        if (e.target.classList.contains("btn-ver-imagen")) {
+          const url = e.target.dataset.url || ""
+          this.mostrarImagenDashboard(url)
+          return
+        }
+
+        if (e.target.id === "btnCerrarImagenDashboard") {
+          this.cerrarImagenDashboard()
+          return
+        }
+
+        if (e.target.id === "modalImagenDashboard") {
+          this.cerrarImagenDashboard()
+          return
+        }
+
+        if (e.target.id === "btnValidarTodoDashboard") {
+          window.PhotinoBridge.send({
+            action: "dashboard.validarTodo"
+          }).then(() => {
+            this.cargarDatos()
+          })
+
+          return
+        }
+
+        if (e.target.id === "btnRechazarTodoDashboard") {
+          window.PhotinoBridge.send({
+            action: "dashboard.rechazarTodo"
+          }).then(() => {
+            this.cargarDatos()
+          })
+
+          return
         }
 
         if (e.target.id === "btnExportarDashboard") {
@@ -67,10 +133,23 @@ if (!window.DashboardController) {
             sheetName: "Dashboard Calidad",
             title: "QCC - Dashboard Calidad"
           })
+
+          return
         }
       }
 
       document.addEventListener("click", this._clickHandler)
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault()
+          this.cargarDatos()
+        }
+
+        if (e.key === "Escape") {
+          this.cerrarImagenDashboard()
+        }
+      })
     }
 
     async cargarFiltros() {
@@ -228,29 +307,60 @@ if (!window.DashboardController) {
 
       if (!registros.length) {
         tbody.innerHTML = `
-                  <tr>
-                      <td colspan="12">Sin registros disponibles</td>
-                  </tr>
-              `
+          <tr>
+            <td colspan="15">Sin registros disponibles</td>
+          </tr>
+        `
         return
       }
 
       tbody.innerHTML = registros.map(r => `
-              <tr>
-                  <td>${this.numero(r.id)}</td>
-                  <td>${this.escape(r.fechaRegistro)}</td>
-                  <td>${this.escape(r.horaRegistro)}</td>
-                  <td>${this.escape(r.usuario)}</td>
-                  <td>${this.escape(r.proceso)}</td>
-                  <td>${this.escape(r.maquina)}</td>
-                  <td>${this.escape(r.formulario || "-")}</td>
-                  <td>${this.escape(r.np || "-")}</td>
-                  <td>${this.escape(r.producto || "-")}</td>
-                  <td>${this.escape(r.turno || "-")}</td>
-                  <td>${this.escape(r.estado || "-")}</td>
-                  <td>${this.escape(r.observacion || "-")}</td>
-              </tr>
-          `).join("")
+        <tr>
+          <td>${this.numero(r.id)}</td>
+          <td>${this.escape(r.fechaRegistro)}</td>
+          <td>${this.escape(r.horaRegistro)}</td>
+          <td>${this.escape(r.usuario)}</td>
+          <td>${this.escape(r.proceso)}</td>
+          <td>${this.escape(r.maquina)}</td>
+          <td>${this.escape(r.formulario || "-")}</td>
+          <td>${this.escape(r.np || "-")}</td>
+          <td>${this.escape(r.producto || "-")}</td>
+          <td>${this.escape(r.turno || "-")}</td>
+          <td>${this.escape(r.estado || "-")}</td>
+          <td>${this.escape(r.observacion || "-")}</td>
+
+          <td>
+            ${this.renderEstadoValidacion(r.estadoValidacion)}
+          </td>
+
+          <td>
+            <button
+              class="btn-primary btn-validar-registro"
+              data-id="${r.id}">
+              Validar
+            </button>
+
+            <button
+              class="btn-secondary btn-rechazar-registro"
+              data-id="${r.id}">
+              Rechazar
+            </button>
+          </td>
+
+          <td>
+            ${r.imagenUrl && r.imagenUrl.trim() !== ""
+          ? `
+                <button
+                  class="btn-secondary btn-ver-imagen"
+                  data-url="${this.escape(r.imagenUrl)}">
+                  Ver Imagen
+                </button>
+              `
+          : "-"
+        }
+          </td>
+        </tr>
+      `).join("")
     }
 
     chartBarHorizontal(canvasId, rows, labelKey, valueKey, label) {
@@ -302,9 +412,22 @@ if (!window.DashboardController) {
       const procesos = [...new Set(rows.map(x => x.proceso || "-"))]
       const inspectores = [...new Set(rows.map(x => x.inspector || "-"))]
 
-      const datasets = inspectores.map(inspector => {
+      const colores = [
+        "#2563eb", // azul
+        "#16a34a", // verde
+        "#f97316", // naranja
+        "#dc2626", // rojo
+        "#7c3aed", // morado
+        "#0891b2", // cyan
+        "#eab308", // amarillo
+        "#ec4899"  // rosado
+      ]
+
+      const datasets = inspectores.map((inspector, index) => {
         return {
           label: inspector,
+          backgroundColor: colores[index % colores.length],
+          borderColor: colores[index % colores.length],
           data: procesos.map(proceso => {
             const row = rows.find(x =>
               (x.proceso || "-") === proceso &&
@@ -403,6 +526,23 @@ if (!window.DashboardController) {
               </span>
           `
     }
+    renderEstadoValidacion(estado) {
+      const value = estado || "PENDIENTE"
+
+      let color = "#f59e0b"
+
+      if (value === "VALIDADO") color = "#16a34a"
+      if (value === "RECHAZADO") color = "#dc2626"
+
+      return `
+        <span style="
+          font-weight:700;
+          color:${color};
+        ">
+          ${this.escape(value)}
+        </span>
+      `
+    }
 
     renderLoading() {
       const tbody1 = document.getElementById("tbodyDashboardDesempeno")
@@ -419,7 +559,7 @@ if (!window.DashboardController) {
       if (tbody2) {
         tbody2.innerHTML = `
                   <tr>
-                      <td colspan="12">Cargando registros...</td>
+                  <td colspan="15">Cargando registros...</td>
                   </tr>
               `
       }
@@ -440,12 +580,99 @@ if (!window.DashboardController) {
       if (tbody2) {
         tbody2.innerHTML = `
                   <tr>
-                      <td colspan="12">Error: ${this.escape(message)}</td>
+                  <td colspan="15">Error: ${this.escape(message)}</td>
                   </tr>
               `
       }
     }
+    mostrarImagenDashboard(url) {
+      const imagenUrl = this.normalizarImagenUrl(url)
 
+      if (!imagenUrl) {
+        alert("No hay imagen disponible para este registro.")
+        return
+      }
+
+      this.cerrarImagenDashboard()
+
+      const modal = document.createElement("div")
+      modal.id = "modalImagenDashboard"
+      modal.style.position = "fixed"
+      modal.style.left = "0"
+      modal.style.top = "0"
+      modal.style.width = "100%"
+      modal.style.height = "100%"
+      modal.style.background = "rgba(15, 23, 42, 0.75)"
+      modal.style.zIndex = "9999"
+      modal.style.display = "flex"
+      modal.style.alignItems = "center"
+      modal.style.justifyContent = "center"
+      modal.style.padding = "24px"
+
+      modal.innerHTML = `
+        <div style="
+          background:#ffffff;
+          border-radius:12px;
+          max-width:90%;
+          max-height:90%;
+          padding:16px;
+          box-shadow:0 20px 60px rgba(0,0,0,0.35);
+          position:relative;
+        ">
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:12px;
+          ">
+            <strong>Imagen del registro</strong>
+
+            <button
+              id="btnCerrarImagenDashboard"
+              class="btn-secondary"
+              type="button">
+              Cerrar
+            </button>
+          </div>
+
+          <img
+            src="${this.escape(imagenUrl)}"
+            alt="Imagen del registro"
+            style="
+              display:block;
+              max-width:100%;
+              max-height:75vh;
+              object-fit:contain;
+              border-radius:8px;
+            "
+          />
+        </div>
+      `
+
+      document.body.appendChild(modal)
+    }
+
+    cerrarImagenDashboard() {
+      const modal = document.getElementById("modalImagenDashboard")
+      if (modal) modal.remove()
+    }
+
+    normalizarImagenUrl(url) {
+      const value = String(url || "").trim()
+
+      if (!value) return ""
+
+      if (value.startsWith("http://") || value.startsWith("https://")) {
+        return value
+      }
+
+      if (value.startsWith("/")) {
+        return `https://api.faret.cl/calidad${value}`
+      }
+
+      return `https://api.faret.cl/calidad/${value}`
+    }
     setText(id, value) {
       const el = document.getElementById(id)
       if (el) el.textContent = value

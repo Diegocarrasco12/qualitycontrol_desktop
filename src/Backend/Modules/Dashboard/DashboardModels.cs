@@ -71,6 +71,11 @@ namespace QualityControlCenter.Modules.Dashboard
         public string Turno { get; set; } = "";
         public string Estado { get; set; } = "";
         public string Observacion { get; set; } = "";
+
+        public string EstadoValidacion { get; set; } = "";
+        public string FechaValidacion { get; set; } = "";
+        public string UsuarioValidacion { get; set; } = "";
+        public string ImagenUrl { get; set; } = "";
     }
 
     public class DashboardCatalogoDto

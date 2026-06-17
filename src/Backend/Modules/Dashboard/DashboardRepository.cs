@@ -352,13 +352,18 @@ namespace QualityControlCenter.Modules.Dashboard
                     IFNULL(rc.descripcion_producto, '-') AS producto,
                     IFNULL(rc.turno, '-') AS turno,
                     IFNULL(ec.nombre, '-') AS estado,
-                    IFNULL(rc.observacion, '-') AS observacion
+                    IFNULL(rc.observacion, '-') AS observacion,
+IFNULL(rc.estado_validacion, 'PENDIENTE') AS estado_validacion,
+IFNULL(DATE_FORMAT(rc.fecha_validacion, '%d-%m-%Y %H:%i'), '') AS fecha_validacion,
+IFNULL(rc.usuario_validacion, '') AS usuario_validacion,
+IFNULL(ra.ruta_archivo, '') AS imagen_url
                 FROM registros_control rc
                 LEFT JOIN usuarios u ON rc.usuario_id = u.id
                 LEFT JOIN procesos p ON rc.proceso_id = p.id
                 LEFT JOIN maquinas m ON rc.maquina_id = m.id
                 LEFT JOIN formularios_control f ON rc.formulario_id = f.id
                 LEFT JOIN estados_catalogo ec ON rc.estado_id = ec.id
+                LEFT JOIN registro_adjuntos ra ON ra.registro_id = rc.id
                 WHERE 1 = 1
                   AND UPPER(IFNULL(rc.area, '')) = 'CALIDAD'
                   {filtros}
@@ -387,6 +392,10 @@ namespace QualityControlCenter.Modules.Dashboard
                         Turno = Text(reader, "turno"),
                         Estado = Text(reader, "estado"),
                         Observacion = Text(reader, "observacion"),
+                        EstadoValidacion = Text(reader, "estado_validacion"),
+                        FechaValidacion = Text(reader, "fecha_validacion"),
+                        UsuarioValidacion = Text(reader, "usuario_validacion"),
+                        ImagenUrl = Text(reader, "imagen_url"),
                     }
                 );
             }
@@ -513,6 +522,88 @@ namespace QualityControlCenter.Modules.Dashboard
             }
 
             return result;
+        }
+
+        public async Task ValidarRegistro(int id)
+        {
+            using var conn = _db.GetCalidadConnection();
+            await conn.OpenAsync();
+
+            using var cmd = new MySqlCommand(
+                @"
+        UPDATE registros_control
+        SET
+            estado_validacion = 'VALIDADO',
+            fecha_validacion = NOW(),
+            usuario_validacion = 'SUPERVISOR'
+        WHERE id = @id
+    ",
+                conn
+            );
+
+            cmd.Parameters.AddWithValue("@id", id);
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task RechazarRegistro(int id)
+        {
+            using var conn = _db.GetCalidadConnection();
+            await conn.OpenAsync();
+
+            using var cmd = new MySqlCommand(
+                @"
+        UPDATE registros_control
+        SET
+            estado_validacion = 'RECHAZADO',
+            fecha_validacion = NOW(),
+            usuario_validacion = 'SUPERVISOR'
+        WHERE id = @id
+    ",
+                conn
+            );
+
+            cmd.Parameters.AddWithValue("@id", id);
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task ValidarTodo()
+        {
+            using var conn = _db.GetCalidadConnection();
+            await conn.OpenAsync();
+
+            using var cmd = new MySqlCommand(
+                @"
+        UPDATE registros_control
+        SET
+            estado_validacion = 'VALIDADO',
+            fecha_validacion = NOW(),
+            usuario_validacion = 'SUPERVISOR'
+        ",
+                conn
+            );
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task RechazarTodo()
+        {
+            using var conn = _db.GetCalidadConnection();
+            await conn.OpenAsync();
+
+            using var cmd = new MySqlCommand(
+                @"
+        UPDATE registros_control
+        SET
+            estado_validacion = 'RECHAZADO',
+            fecha_validacion = NOW(),
+            usuario_validacion = 'SUPERVISOR'
+        ",
+                conn
+            );
+
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }

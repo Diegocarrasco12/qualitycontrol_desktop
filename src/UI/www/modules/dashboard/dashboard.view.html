@@ -134,8 +134,15 @@
     </div>
   </div>
 
-  <div class="card dashboard-chart-card">
-    <div class="module-title">Últimos registros</div>
+  <div class="card dashboard-table-card dashboard-ultimos-card">
+    <div class="dashboard-table-header">
+      <div class="module-title">Últimos registros</div>
+
+      <div class="dashboard-validation-actions">
+        <button class="btn-primary" id="btnValidarTodoDashboard">Validar Todo</button>
+        <button class="btn-secondary" id="btnRechazarTodoDashboard">Rechazar Todo</button>
+      </div>
+    </div>
 
     <div class="table-container">
       <table class="table" id="tablaDashboardUltimos">
@@ -153,12 +160,14 @@
             <th>Turno</th>
             <th>Estado</th>
             <th>Observación</th>
+            <th>Estado Validación</th>
+            <th>Acciones</th>
+            <th>Imagen</th>
           </tr>
         </thead>
-
         <tbody id="tbodyDashboardUltimos">
           <tr>
-            <td colspan="12">Cargando...</td>
+            <td colspan="15">Cargando...</td>
           </tr>
         </tbody>
       </table>

@@ -4,12 +4,56 @@ namespace QualityControlCenter.Modules.RegistrosProduccion
 {
     public class RegistrosProduccionResumenDto
     {
-        public int TotalRegistros { get; set; }
-        public int RegistrosHoy { get; set; }
-        public int MaquinasConRegistros { get; set; }
-        public int Rechazos { get; set; }
+        public int ControlesHoy { get; set; }
+        public int ControlesPeriodo { get; set; }
 
-        public List<RegistroProduccionDto> Registros { get; set; } = new();
+        public decimal CumplimientoGeneral { get; set; }
+        public int NoConformidadesDetectadas { get; set; }
+
+        public decimal MermaInsumosHoy { get; set; }
+        public decimal MermaProcesoHoy { get; set; }
+        public int RegistrosConObservacionHoy { get; set; }
+
+        public List<RegistrosProduccionInspectorDto> CumplimientoPorInspector { get; set; } = new();
+        public List<RegistrosProduccionInspectorDto> NoConformidadesPorInspector { get; set; } =
+            new();
+        public List<RegistrosProduccionProcesoInspectorDto> ControlesPorProceso { get; set; } =
+            new();
+        public List<RegistrosProduccionTendenciaDto> TendenciaCumplimiento { get; set; } = new();
+        public List<RegistrosProduccionDesempenoInspectorDto> DesempenoIndividual { get; set; } =
+            new();
+
+        public List<RegistroProduccionDto> UltimosRegistros { get; set; } = new();
+    }
+
+    public class RegistrosProduccionInspectorDto
+    {
+        public string Inspector { get; set; } = "";
+        public int Total { get; set; }
+        public decimal Porcentaje { get; set; }
+    }
+
+    public class RegistrosProduccionProcesoInspectorDto
+    {
+        public string Proceso { get; set; } = "";
+        public string Inspector { get; set; } = "";
+        public int Total { get; set; }
+    }
+
+    public class RegistrosProduccionTendenciaDto
+    {
+        public string Fecha { get; set; } = "";
+        public decimal Cumplimiento { get; set; }
+    }
+
+    public class RegistrosProduccionDesempenoInspectorDto
+    {
+        public string Inspector { get; set; } = "";
+        public decimal Cumplimiento { get; set; }
+        public int ControlesProgramados { get; set; }
+        public int ControlesRealizados { get; set; }
+        public int NoConformidades { get; set; }
+        public string Estado { get; set; } = "";
     }
 
     public class RegistroProduccionDto
@@ -30,5 +74,22 @@ namespace QualityControlCenter.Modules.RegistrosProduccion
         public string Turno { get; set; } = "";
         public string Estado { get; set; } = "";
         public string Observacion { get; set; } = "";
+
+        public string EstadoValidacion { get; set; } = "";
+        public string FechaValidacion { get; set; } = "";
+        public string UsuarioValidacion { get; set; } = "";
+        public string ImagenUrl { get; set; } = "";
+    }
+
+    public class RegistrosProduccionCatalogoDto
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = "";
+    }
+
+    public class RegistrosProduccionFiltrosDto
+    {
+        public List<RegistrosProduccionCatalogoDto> Usuarios { get; set; } = new();
+        public List<RegistrosProduccionCatalogoDto> Procesos { get; set; } = new();
     }
 }

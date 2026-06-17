@@ -1427,8 +1427,216 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
 .dashboard-calidad-module .dashboard-filters-card {
     min-height: auto;
     max-height: none;
     padding: 18px;
+}
+
+/* Dashboard Calidad - scroll horizontal solo últimos registros */
+.dashboard-calidad-module #tablaDashboardUltimos {
+    min-width: 1750px;
+}
+
+.dashboard-calidad-module #tablaDashboardUltimos th,
+.dashboard-calidad-module #tablaDashboardUltimos td {
+    white-space: nowrap;
+}
+
+.dashboard-calidad-module #tablaDashboardUltimos td:nth-child(12) {
+    min-width: 360px;
+    max-width: 520px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dashboard-calidad-module .table-container {
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+}
+
+.dashboard-calidad-module #tablaDashboardUltimos {
+    min-width: 1750px !important;
+}
+
+.dashboard-calidad-module .dashboard-table-card {
+    min-height: auto;
+    max-height: none;
+    overflow: visible;
+}
+
+.dashboard-calidad-module .dashboard-ultimos-card .table-container {
+    width: 100%;
+    max-height: 360px;
+    overflow-x: scroll !important;
+    overflow-y: auto !important;
+}
+
+.dashboard-calidad-module .dashboard-ultimos-card #tablaDashboardUltimos {
+    width: max-content;
+    min-width: 1900px;
+}
+
+.dashboard-calidad-module .dashboard-ultimos-card #tablaDashboardUltimos thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+/* =====================================================
+   DASHBOARD PRODUCCION
+   MISMO LAYOUT QUE CALIDAD
+===================================================== */
+
+.dashboard-produccion-module {
+    gap: 14px;
+}
+
+.dashboard-produccion-module .kpi-row {
+    margin-bottom: 0;
+}
+
+.dashboard-produccion-module .card {
+    overflow: hidden;
+}
+
+/* Filtros */
+.dashboard-produccion-module .dashboard-filters {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(150px, 1fr)) auto;
+    gap: 14px;
+    align-items: end;
+}
+
+.dashboard-produccion-module .filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dashboard-produccion-module .filter-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.dashboard-produccion-module .filter-field input,
+.dashboard-produccion-module .filter-field select {
+    height: 40px;
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0 10px;
+    background: white;
+}
+
+.dashboard-produccion-module .dashboard-filter-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Grid gráficos */
+.dashboard-produccion-module .dashboard-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.dashboard-produccion-module .dashboard-charts-grid-2 {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 16px;
+}
+
+/* Cards gráficos */
+.dashboard-produccion-module .dashboard-chart-card {
+    min-height: 300px;
+    max-height: 340px;
+    padding: 18px;
+}
+
+.dashboard-produccion-module .dashboard-chart-card canvas {
+    width: 100% !important;
+    height: 230px !important;
+    max-height: 230px !important;
+    display: block;
+}
+
+/* Tablas */
+.dashboard-produccion-module .table-container {
+    max-height: 360px;
+}
+
+.dashboard-produccion-module .card:has(.table-container) {
+    max-height: none;
+}
+
+.dashboard-produccion-module .dashboard-filters-card {
+    min-height: auto;
+    max-height: none;
+    padding: 18px;
+}
+
+.dashboard-produccion-module .dashboard-table-card {
+    min-height: auto;
+    max-height: none;
+    overflow: visible;
+}
+
+/* Tabla últimos registros */
+.dashboard-produccion-module #tablaRegistrosProduccion {
+    min-width: 1900px;
+}
+
+.dashboard-produccion-module #tablaRegistrosProduccion th,
+.dashboard-produccion-module #tablaRegistrosProduccion td {
+    white-space: nowrap;
+}
+
+.dashboard-produccion-module #tablaRegistrosProduccion td:nth-child(12) {
+    min-width: 360px;
+    max-width: 520px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dashboard-produccion-module .dashboard-ultimos-card .table-container {
+    width: 100%;
+    max-height: 360px;
+    overflow-x: scroll !important;
+    overflow-y: auto !important;
+}
+
+.dashboard-produccion-module .dashboard-ultimos-card #tablaRegistrosProduccion {
+    width: max-content;
+    min-width: 1900px;
+}
+
+.dashboard-produccion-module .dashboard-ultimos-card #tablaRegistrosProduccion thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+/* Responsive */
+@media (max-width: 1300px) {
+    .dashboard-produccion-module .dashboard-filters {
+        grid-template-columns: repeat(3, minmax(150px, 1fr));
+    }
+
+    .dashboard-produccion-module .dashboard-charts-grid,
+    .dashboard-produccion-module .dashboard-charts-grid-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+
+    .dashboard-produccion-module .dashboard-filters,
+    .dashboard-produccion-module .dashboard-charts-grid,
+    .dashboard-produccion-module .dashboard-charts-grid-2 {
+        grid-template-columns: 1fr;
+    }
 }

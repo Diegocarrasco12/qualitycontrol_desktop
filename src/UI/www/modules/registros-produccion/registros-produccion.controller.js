@@ -3,29 +3,31 @@ if (!window.RegistrosProduccionController) {
         constructor() {
             this.data = null
             this.loading = false
-            this.filtro = ""
             this._clickHandler = null
-            this._inputHandler = null
+            this.charts = []
         }
 
         async init() {
-            console.log("INIT REGISTROS PRODUCCION")
+            console.log("INIT DASHBOARD PRODUCCION")
+
             this.bindEvents()
             this.initDatePickers()
+
+            await this.cargarFiltros()
             await this.cargarDatos()
         }
 
         initDatePickers() {
             if (!window.flatpickr) return
 
-            flatpickr("#fechaDesdeProduccion", {
+            flatpickr("#produccionFechaDesde", {
                 dateFormat: "Y-m-d",
                 altInput: true,
                 altFormat: "d-m-Y",
                 allowInput: true
             })
 
-            flatpickr("#fechaHastaProduccion", {
+            flatpickr("#produccionFechaHasta", {
                 dateFormat: "Y-m-d",
                 altInput: true,
                 altFormat: "d-m-Y",
@@ -34,55 +36,156 @@ if (!window.RegistrosProduccionController) {
         }
 
         bindEvents() {
-            if (!this._clickHandler) {
-                this._clickHandler = (e) => {
+            if (this._clickHandler) return
 
-                    if (e.target.id === "btnExportarRegistrosProduccion") {
-                        window.ExcelExporter.exportTable({
-                            tableSelector: "#tablaRegistrosProduccion",
-                            fileName: `qcc_registros_produccion_${Date.now()}.xlsx`,
-                            sheetName: "Produccion",
-                            title: "QCC - Registros Producción"
-                        })
-                    }
-
-                    if (e.target.id === "btnActualizarRegistrosProduccion") {
-                        this.filtro = this.getVal("filtroRegistrosProduccion")
-                        this.cargarDatos()
-                    }
-
-                    if (e.target.id === "btnFiltrarRegistrosProduccion") {
-                        this.filtro = this.getVal("filtroRegistrosProduccion")
-                        this.cargarDatos()
-                    }
-
-                    if (e.target.id === "btnLimpiarRegistrosProduccion") {
-                        this.filtro = ""
-
-                        const input = document.getElementById("filtroRegistrosProduccion")
-                        const desde = document.getElementById("fechaDesdeProduccion")
-                        const hasta = document.getElementById("fechaHastaProduccion")
-
-                        if (input) input.value = ""
-                        if (desde?._flatpickr) desde._flatpickr.clear()
-                        if (hasta?._flatpickr) hasta._flatpickr.clear()
-
-                        this.cargarDatos()
-                    }
+            this._clickHandler = (e) => {
+                if (e.target.id === "btnActualizarRegistrosProduccion") {
+                    this.cargarDatos()
+                    return
                 }
 
-                document.addEventListener("click", this._clickHandler)
+                if (e.target.id === "btnFiltrarRegistrosProduccion") {
+                    this.cargarDatos()
+                    return
+                }
+
+                if (e.target.id === "btnLimpiarRegistrosProduccion") {
+                    const desde = document.getElementById("produccionFechaDesde")
+                    const hasta = document.getElementById("produccionFechaHasta")
+
+                    if (desde?._flatpickr) desde._flatpickr.clear()
+                    if (hasta?._flatpickr) hasta._flatpickr.clear()
+
+                    document.getElementById("produccionInspector").value = ""
+                    document.getElementById("produccionTurno").value = ""
+                    document.getElementById("produccionProceso").value = ""
+
+                    this.cargarDatos()
+                    return
+                }
+
+                if (e.target.classList.contains("btn-validar-produccion")) {
+                    const id = Number(e.target.dataset.id)
+
+                    window.PhotinoBridge.send({
+                        action: "registrosProduccion.validarRegistro",
+                        id
+                    }).then(() => {
+                        this.cargarDatos()
+                    })
+
+                    return
+                }
+
+                if (e.target.classList.contains("btn-rechazar-produccion")) {
+                    const id = Number(e.target.dataset.id)
+
+                    window.PhotinoBridge.send({
+                        action: "registrosProduccion.rechazarRegistro",
+                        id
+                    }).then(() => {
+                        this.cargarDatos()
+                    })
+
+                    return
+                }
+
+                if (e.target.classList.contains("btn-ver-imagen-produccion")) {
+                    const url = e.target.dataset.url || ""
+                    this.mostrarImagenProduccion(url)
+                    return
+                }
+
+                if (e.target.id === "btnCerrarImagenProduccion") {
+                    this.cerrarImagenProduccion()
+                    return
+                }
+
+                if (e.target.id === "modalImagenProduccion") {
+                    this.cerrarImagenProduccion()
+                    return
+                }
+
+                if (e.target.id === "btnValidarTodoProduccion") {
+                    window.PhotinoBridge.send({
+                        action: "registrosProduccion.validarTodo"
+                    }).then(() => {
+                        this.cargarDatos()
+                    })
+
+                    return
+                }
+
+                if (e.target.id === "btnRechazarTodoProduccion") {
+                    window.PhotinoBridge.send({
+                        action: "registrosProduccion.rechazarTodo"
+                    }).then(() => {
+                        this.cargarDatos()
+                    })
+
+                    return
+                }
+
+                if (e.target.id === "btnExportarRegistrosProduccion") {
+                    window.ExcelExporter.exportTable({
+                        tableSelector: "#tablaProduccionDesempeno",
+                        fileName: "qcc_dashboard_produccion.xlsx",
+                        sheetName: "Dashboard Produccion",
+                        title: "QCC - Dashboard Producción"
+                    })
+
+                    return
+                }
             }
 
-            if (!this._inputHandler) {
-                this._inputHandler = (e) => {
-                    if (e.target.id === "filtroRegistrosProduccion") {
-                        this.filtro = e.target.value || ""
-                        this.renderRegistros()
-                    }
+            document.addEventListener("click", this._clickHandler)
+
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault()
+                    this.cargarDatos()
                 }
 
-                document.addEventListener("input", this._inputHandler)
+                if (e.key === "Escape") {
+                    this.cerrarImagenProduccion()
+                }
+            })
+        }
+
+        async cargarFiltros() {
+            try {
+                const res = await window.PhotinoBridge.send({
+                    action: "registrosProduccion.obtenerFiltros"
+                })
+
+                if (!res || res.ok === false) {
+                    throw new Error(res?.error || "Error cargando filtros")
+                }
+
+                const usuarios = res.data?.usuarios || []
+                const procesos = res.data?.procesos || []
+
+                const cboInspector = document.getElementById("produccionInspector")
+                const cboProceso = document.getElementById("produccionProceso")
+
+                if (cboInspector) {
+                    cboInspector.innerHTML =
+                        `<option value="">Todos</option>` +
+                        usuarios.map(x =>
+                            `<option value="${x.id}">${x.nombre}</option>`
+                        ).join("")
+                }
+
+                if (cboProceso) {
+                    cboProceso.innerHTML =
+                        `<option value="">Todos</option>` +
+                        procesos.map(x =>
+                            `<option value="${x.id}">${x.nombre}</option>`
+                        ).join("")
+                }
+
+            } catch (err) {
+                console.error("ERROR FILTROS PRODUCCION:", err)
             }
         }
 
@@ -95,114 +198,482 @@ if (!window.RegistrosProduccionController) {
             try {
                 const res = await window.PhotinoBridge.send({
                     action: "registrosProduccion.obtenerResumen",
-                    data: {}
+                    data: {
+                        fechaDesde: this.getVal("produccionFechaDesde"),
+                        fechaHasta: this.getVal("produccionFechaHasta"),
+                        inspector: this.getVal("produccionInspector"),
+                        turno: this.getVal("produccionTurno"),
+                        proceso: this.getVal("produccionProceso")
+                    }
                 })
 
+                console.log("📊 DASHBOARD PRODUCCION:", res)
+
                 if (!res || res.ok === false) {
-                    throw new Error(res?.error || "Error cargando registros producción")
+                    throw new Error(res?.error || "Error cargando dashboard producción")
                 }
 
-                this.data = res.data
-
-                this.renderKpis()
-                this.renderRegistros()
+                this.data = res.data || {}
+                this.render()
             } catch (err) {
-                console.error("REGISTROS PRODUCCION ERROR:", err)
+                console.error("DASHBOARD PRODUCCION ERROR:", err)
                 this.renderError(err.message)
             } finally {
                 this.loading = false
             }
         }
 
-        renderKpis() {
+        render() {
             if (!this.data) return
 
-            this.setText("prodTotalRegistros", this.data.totalRegistros ?? 0)
-            this.setText("prodRegistrosHoy", this.data.registrosHoy ?? 0)
-            this.setText("prodMaquinasConRegistros", this.data.maquinasConRegistros ?? 0)
-            this.setText("prodRechazos", this.data.rechazos ?? 0)
+            this.renderKpis()
+            this.renderCharts()
+            this.renderDesempeno()
+            this.renderUltimosRegistros()
         }
 
-        renderRegistros() {
-            const tbody = document.getElementById("tbodyRegistrosProduccion")
+        renderKpis() {
+            this.setText("prodControlesHoy", this.numero(this.data.controlesHoy))
+            this.setText("prodControlesPeriodo", this.numero(this.data.controlesPeriodo))
+            this.setText("prodCumplimientoGeneral", `${this.numero(this.data.cumplimientoGeneral)}%`)
+            this.setText("prodNoConformidades", this.numero(this.data.noConformidadesDetectadas))
+        }
+
+        renderCharts() {
+            this.destroyCharts()
+
+            this.chartBarHorizontal(
+                "chartProduccionCumplimientoInspector",
+                this.data.cumplimientoPorInspector || [],
+                "inspector",
+                "porcentaje",
+                "Cumplimiento %"
+            )
+
+            this.chartBarHorizontal(
+                "chartProduccionNoConformidadesInspector",
+                this.data.noConformidadesPorInspector || [],
+                "inspector",
+                "total",
+                "No conformidades"
+            )
+
+            this.chartControlesPorProceso(
+                "chartProduccionControlesProceso",
+                this.data.controlesPorProceso || []
+            )
+
+            this.chartLine(
+                "chartProduccionTendenciaCumplimiento",
+                this.data.tendenciaCumplimiento || [],
+                "fecha",
+                "cumplimiento",
+                "Cumplimiento %"
+            )
+        }
+
+        renderDesempeno() {
+            const tbody = document.getElementById("tbodyProduccionDesempeno")
             if (!tbody) return
 
-            const registros = this.data?.registros || []
-            const filtro = String(this.filtro || "").trim().toLowerCase()
+            const rows = this.data.desempenoIndividual || []
 
-            const filtrados = registros.filter(r => {
-                if (!filtro) return true
-
-                const texto = [
-                    r.id,
-                    r.fechaRegistro,
-                    r.horaRegistro,
-                    r.usuario,
-                    r.proceso,
-                    r.maquina,
-                    r.formulario,
-                    r.np,
-                    r.producto,
-                    r.turno,
-                    r.estado,
-                    r.observacion
-                ].join(" ").toLowerCase()
-
-                return texto.includes(filtro)
-            })
-
-            if (!filtrados.length) {
+            if (!rows.length) {
                 tbody.innerHTML = `
-                    <tr>
-                        <td colspan="12">Sin registros de producción disponibles</td>
-                    </tr>
-                `
+            <tr>
+              <td colspan="6">Sin datos de desempeño</td>
+            </tr>
+          `
                 return
             }
 
-            tbody.innerHTML = filtrados.map(r => `
-                <tr>
-                    <td>${r.id}</td>
-                    <td>${this.escape(r.fechaRegistro)}</td>
-                    <td>${this.escape(r.horaRegistro)}</td>
-                    <td>${this.escape(r.usuario)}</td>
-                    <td>${this.escape(r.proceso)}</td>
-                    <td>${this.escape(r.maquina)}</td>
-                    <td>${this.escape(r.formulario || "-")}</td>
-                    <td>${this.escape(r.np || "-")}</td>
-                    <td>${this.escape(r.producto || "-")}</td>
-                    <td>${this.escape(r.turno || "-")}</td>
-                    <td>${this.renderEstado(r.estado)}</td>
-                    <td>${this.escape(r.observacion || "-")}</td>
-                </tr>
-            `).join("")
+            tbody.innerHTML = rows.map(r => `
+          <tr>
+            <td>${this.escape(r.inspector)}</td>
+            <td>${this.numero(r.cumplimiento)}%</td>
+            <td>${this.numero(r.controlesProgramados)}</td>
+            <td>${this.numero(r.controlesRealizados)}</td>
+            <td>${this.numero(r.noConformidades)}</td>
+            <td>${this.renderEstadoDesempeno(r.estado)}</td>
+          </tr>
+        `).join("")
         }
 
-        renderEstado(estado) {
+        renderUltimosRegistros() {
+            const tbody = document.getElementById("tbodyRegistrosProduccion")
+            if (!tbody) return
+
+            const registros = this.data?.ultimosRegistros || []
+
+            if (!registros.length) {
+                tbody.innerHTML = `
+            <tr>
+              <td colspan="15">Sin registros disponibles</td>
+            </tr>
+          `
+                return
+            }
+
+            tbody.innerHTML = registros.map(r => `
+          <tr>
+            <td>${this.numero(r.id)}</td>
+            <td>${this.escape(r.fechaRegistro)}</td>
+            <td>${this.escape(r.horaRegistro)}</td>
+            <td>${this.escape(r.usuario)}</td>
+            <td>${this.escape(r.proceso)}</td>
+            <td>${this.escape(r.maquina)}</td>
+            <td>${this.escape(r.formulario || "-")}</td>
+            <td>${this.escape(r.np || "-")}</td>
+            <td>${this.escape(r.producto || "-")}</td>
+            <td>${this.escape(r.turno || "-")}</td>
+            <td>${this.escape(r.estado || "-")}</td>
+            <td>${this.escape(r.observacion || "-")}</td>
+
+            <td>
+              ${this.renderEstadoValidacion(r.estadoValidacion)}
+            </td>
+
+            <td>
+              <button
+                class="btn-primary btn-validar-produccion"
+                data-id="${r.id}">
+                Validar
+              </button>
+
+              <button
+                class="btn-secondary btn-rechazar-produccion"
+                data-id="${r.id}">
+                Rechazar
+              </button>
+            </td>
+
+            <td>
+              ${r.imagenUrl && r.imagenUrl.trim() !== ""
+                    ? `
+                  <button
+                    class="btn-secondary btn-ver-imagen-produccion"
+                    data-url="${this.escape(r.imagenUrl)}">
+                    Ver Imagen
+                  </button>
+                `
+                    : "-"
+                }
+            </td>
+          </tr>
+        `).join("")
+        }
+
+        chartBarHorizontal(canvasId, rows, labelKey, valueKey, label) {
+            const ctx = document.getElementById(canvasId)
+            if (!ctx) return
+
+            const labels = rows.map(x => x[labelKey] || "-")
+            const values = rows.map(x => Number(x[valueKey] || 0))
+
+            const chart = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels,
+                    datasets: [{
+                        label,
+                        data: values,
+                        backgroundColor: [
+                            "#2563eb",
+                            "#16a34a",
+                            "#f97316",
+                            "#dc2626",
+                            "#7c3aed",
+                            "#0891b2"
+                        ],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: "y",
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { beginAtZero: true },
+                        y: { ticks: { font: { size: 11 } } }
+                    }
+                }
+            })
+
+            this.charts.push(chart)
+        }
+
+        chartControlesPorProceso(canvasId, rows) {
+            const ctx = document.getElementById(canvasId)
+            if (!ctx) return
+
+            const procesos = [...new Set(rows.map(x => x.proceso || "-"))]
+            const inspectores = [...new Set(rows.map(x => x.inspector || "-"))]
+
+            const colores = [
+                "#2563eb",
+                "#16a34a",
+                "#f97316",
+                "#dc2626",
+                "#7c3aed",
+                "#0891b2",
+                "#eab308",
+                "#ec4899"
+            ]
+
+            const datasets = inspectores.map((inspector, index) => {
+                return {
+                    label: inspector,
+                    backgroundColor: colores[index % colores.length],
+                    borderColor: colores[index % colores.length],
+                    data: procesos.map(proceso => {
+                        const row = rows.find(x =>
+                            (x.proceso || "-") === proceso &&
+                            (x.inspector || "-") === inspector
+                        )
+
+                        return Number(row?.total || 0)
+                    }),
+                    borderRadius: 8
+                }
+            })
+
+            const chart = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: procesos,
+                    datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: { font: { size: 10 } }
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true
+                        }
+                    }
+                }
+            })
+
+            this.charts.push(chart)
+        }
+
+        chartLine(canvasId, rows, labelKey, valueKey, label) {
+            const ctx = document.getElementById(canvasId)
+            if (!ctx) return
+
+            const labels = rows.map(x => x[labelKey] || "-")
+            const values = rows.map(x => Number(x[valueKey] || 0))
+
+            const chart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels,
+                    datasets: [{
+                        label,
+                        data: values,
+                        borderColor: "#2563eb",
+                        backgroundColor: "rgba(37, 99, 235, 0.12)",
+                        pointBackgroundColor: "#2563eb",
+                        pointRadius: 4,
+                        tension: 0.35,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            })
+
+            this.charts.push(chart)
+        }
+
+        renderEstadoDesempeno(estado) {
             const value = estado || "-"
-            return `<span style="font-weight:600;">${this.escape(value)}</span>`
+
+            let color = "#64748b"
+
+            if (value === "Excelente") color = "#16a34a"
+            if (value === "A mejorar") color = "#f97316"
+            if (value === "Crítico") color = "#dc2626"
+
+            return `
+          <span style="
+            font-weight:700;
+            color:${color};
+          ">
+            ${this.escape(value)}
+          </span>
+        `
+        }
+
+        renderEstadoValidacion(estado) {
+            const value = estado || "PENDIENTE"
+
+            let color = "#f59e0b"
+
+            if (value === "VALIDADO") color = "#16a34a"
+            if (value === "RECHAZADO") color = "#dc2626"
+
+            return `
+          <span style="
+            font-weight:700;
+            color:${color};
+          ">
+            ${this.escape(value)}
+          </span>
+        `
         }
 
         renderLoading() {
-            const tbody = document.getElementById("tbodyRegistrosProduccion")
-            if (tbody) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="12">Cargando registros de producción...</td>
-                    </tr>
-                `
+            const tbody1 = document.getElementById("tbodyProduccionDesempeno")
+            const tbody2 = document.getElementById("tbodyRegistrosProduccion")
+
+            if (tbody1) {
+                tbody1.innerHTML = `
+            <tr>
+              <td colspan="6">Cargando dashboard...</td>
+            </tr>
+          `
+            }
+
+            if (tbody2) {
+                tbody2.innerHTML = `
+            <tr>
+              <td colspan="15">Cargando registros...</td>
+            </tr>
+          `
             }
         }
 
         renderError(message) {
-            const tbody = document.getElementById("tbodyRegistrosProduccion")
-            if (tbody) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="12">Error: ${this.escape(message)}</td>
-                    </tr>
-                `
+            const tbody1 = document.getElementById("tbodyProduccionDesempeno")
+            const tbody2 = document.getElementById("tbodyRegistrosProduccion")
+
+            if (tbody1) {
+                tbody1.innerHTML = `
+            <tr>
+              <td colspan="6">Error: ${this.escape(message)}</td>
+            </tr>
+          `
             }
+
+            if (tbody2) {
+                tbody2.innerHTML = `
+            <tr>
+              <td colspan="15">Error: ${this.escape(message)}</td>
+            </tr>
+          `
+            }
+        }
+
+        mostrarImagenProduccion(url) {
+            const imagenUrl = this.normalizarImagenUrl(url)
+
+            if (!imagenUrl) {
+                alert("No hay imagen disponible para este registro.")
+                return
+            }
+
+            this.cerrarImagenProduccion()
+
+            const modal = document.createElement("div")
+            modal.id = "modalImagenProduccion"
+            modal.style.position = "fixed"
+            modal.style.left = "0"
+            modal.style.top = "0"
+            modal.style.width = "100%"
+            modal.style.height = "100%"
+            modal.style.background = "rgba(15, 23, 42, 0.75)"
+            modal.style.zIndex = "9999"
+            modal.style.display = "flex"
+            modal.style.alignItems = "center"
+            modal.style.justifyContent = "center"
+            modal.style.padding = "24px"
+
+            modal.innerHTML = `
+          <div style="
+            background:#ffffff;
+            border-radius:12px;
+            max-width:90%;
+            max-height:90%;
+            padding:16px;
+            box-shadow:0 20px 60px rgba(0,0,0,0.35);
+            position:relative;
+          ">
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              align-items:center;
+              gap:12px;
+              margin-bottom:12px;
+            ">
+              <strong>Imagen del registro</strong>
+
+              <button
+                id="btnCerrarImagenProduccion"
+                class="btn-secondary"
+                type="button">
+                Cerrar
+              </button>
+            </div>
+
+            <img
+              src="${this.escape(imagenUrl)}"
+              alt="Imagen del registro"
+              style="
+                display:block;
+                max-width:100%;
+                max-height:75vh;
+                object-fit:contain;
+                border-radius:8px;
+              "
+            />
+          </div>
+        `
+
+            document.body.appendChild(modal)
+        }
+
+        cerrarImagenProduccion() {
+            const modal = document.getElementById("modalImagenProduccion")
+            if (modal) modal.remove()
+        }
+
+        normalizarImagenUrl(url) {
+            const value = String(url || "").trim()
+
+            if (!value) return ""
+
+            if (value.startsWith("http://") || value.startsWith("https://")) {
+                return value
+            }
+
+            if (value.startsWith("/")) {
+                return `https://api.faret.cl/calidad${value}`
+            }
+
+            return `https://api.faret.cl/calidad/${value}`
         }
 
         setText(id, value) {
@@ -210,8 +681,11 @@ if (!window.RegistrosProduccionController) {
             if (el) el.textContent = value
         }
 
-        getVal(id) {
-            return document.getElementById(id)?.value || ""
+        numero(value) {
+            return Number(value || 0).toLocaleString("es-CL", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            })
         }
 
         escape(value) {
@@ -223,20 +697,30 @@ if (!window.RegistrosProduccionController) {
                 .replaceAll("'", "&#039;")
         }
 
+        getVal(id) {
+            return document.getElementById(id)?.value || ""
+        }
+
+        destroyCharts() {
+            this.charts.forEach(chart => {
+                try {
+                    chart.destroy()
+                } catch (_) { }
+            })
+
+            this.charts = []
+        }
+
         destroy() {
-            console.log("DESTROY REGISTROS PRODUCCION")
+            console.log("DESTROY DASHBOARD PRODUCCION")
 
             if (this._clickHandler) {
                 document.removeEventListener("click", this._clickHandler)
             }
 
-            if (this._inputHandler) {
-                document.removeEventListener("input", this._inputHandler)
-            }
-
             this._clickHandler = null
-            this._inputHandler = null
             this.loading = false
+            this.destroyCharts()
         }
     }
 

@@ -38,6 +38,82 @@ namespace QualityControlCenter.Modules.Dashboard
                         _jsonOptions
                     );
                 }
+                if (action == "dashboard.validarRegistro")
+                {
+                    var id = 0;
+
+                    if (
+                        data.TryGetValue("id", out var rawId)
+                        && int.TryParse(rawId?.ToString(), out var parsedId)
+                    )
+                    {
+                        id = parsedId;
+                    }
+
+                    await _repository.ValidarRegistro(id);
+
+                    return JsonSerializer.Serialize(
+                        new
+                        {
+                            ok = true,
+                            data = (object?)null,
+                            error = (string?)null,
+                        },
+                        _jsonOptions
+                    );
+                }
+                if (action == "dashboard.rechazarRegistro")
+                {
+                    var id = 0;
+
+                    if (
+                        data.TryGetValue("id", out var rawId)
+                        && int.TryParse(rawId?.ToString(), out var parsedId)
+                    )
+                    {
+                        id = parsedId;
+                    }
+
+                    await _repository.RechazarRegistro(id);
+
+                    return JsonSerializer.Serialize(
+                        new
+                        {
+                            ok = true,
+                            data = (object?)null,
+                            error = (string?)null,
+                        },
+                        _jsonOptions
+                    );
+                }
+                if (action == "dashboard.validarTodo")
+                {
+                    await _repository.ValidarTodo();
+
+                    return JsonSerializer.Serialize(
+                        new
+                        {
+                            ok = true,
+                            data = (object?)null,
+                            error = (string?)null,
+                        },
+                        _jsonOptions
+                    );
+                }
+                if (action == "dashboard.rechazarTodo")
+                {
+                    await _repository.RechazarTodo();
+
+                    return JsonSerializer.Serialize(
+                        new
+                        {
+                            ok = true,
+                            data = (object?)null,
+                            error = (string?)null,
+                        },
+                        _jsonOptions
+                    );
+                }
                 if (action == "dashboard.obtenerResumen")
                 {
                     var fechaDesde = "";
