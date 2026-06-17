@@ -46,12 +46,7 @@ if (!window.RegistrosControlController) {
         }
 
         if (e.target.id === "btnExportarRegistrosControl") {
-          window.ExcelExporter.exportTable({
-            tableSelector: "#tablaRegistrosControl",
-            fileName: `qcc_registros_control_${Date.now()}.xlsx`,
-            sheetName: "Registros Control",
-            title: "QCC - Registros de Control"
-          })
+          this.exportarRegistrosControl()
           return
         }
 
@@ -112,8 +107,23 @@ if (!window.RegistrosControlController) {
       }
 
       document.addEventListener("click", this._clickHandler)
-
       document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const idsFiltros = [
+            "fechaDesdeRegistros",
+            "fechaHastaRegistros",
+            "filtroNpRegistros",
+            "filtroTurnoRegistros",
+            "filtroEstadoRegistros"
+          ]
+
+          if (idsFiltros.includes(e.target.id)) {
+            e.preventDefault()
+            this.page = 1
+            this.cargarDatos()
+          }
+        }
+
         if (e.key === "Escape") {
           this.cerrarImagenRegistroControl()
         }
@@ -420,7 +430,107 @@ if (!window.RegistrosControlController) {
 
       return `https://api.faret.cl/calidad/${value}`
     }
+    hayFiltrosActivos() {
+      return [
+        "fechaDesdeRegistros",
+        "fechaHastaRegistros",
+        "filtroNpRegistros",
+        "filtroTurnoRegistros",
+        "filtroEstadoRegistros"
+      ].some(id => this.getVal(id).trim() !== "")
+    }
 
+    async exportarRegistrosControl() {
+      if (this.hayFiltrosActivos()) {
+        window.ExcelExporter.exportTable({
+          tableSelector: "#tablaRegistrosControl",
+          fileName: `qcc_registros_control_${Date.now()}.xlsx`,
+          sheetName: "Registros Control",
+          title: "QCC - Registros de Control"
+        })
+        return
+      }
+
+      const res = await window.PhotinoBridge.send({
+        action: "registrosControl.obtenerRegistros",
+        data: {
+          page: 1,
+          limit: this.total || 999999,
+          fechaDesde: "",
+          fechaHasta: "",
+          np: "",
+          turno: "",
+          estado: ""
+        }
+      })
+
+      if (!res || res.ok === false) {
+        alert(res?.error || "Error exportando registros")
+        return
+      }
+
+      const items = res.data?.items || []
+
+      this.exportarRegistrosDesdeDatos(items)
+    }
+
+    exportarRegistrosDesdeDatos(items) {
+      const tabla = document.createElement("table")
+      tabla.id = "tablaRegistrosControlExportTemp"
+      tabla.style.position = "absolute"
+      tabla.style.left = "-99999px"
+      tabla.style.top = "0"
+
+      tabla.innerHTML = `
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Usuario</th>
+            <th>Proceso</th>
+            <th>Máquina</th>
+            <th>Formulario</th>
+            <th>NP</th>
+            <th>Turno</th>
+            <th>Estado</th>
+            <th>Observación</th>
+            <th>Estado Validación</th>
+            <th>Imagen</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map(r => `
+            <tr>
+              <td>${this.escape(r.id)}</td>
+              <td>${this.escape(r.fechaRegistro)}</td>
+              <td>${this.escape(r.horaRegistro)}</td>
+              <td>${this.escape(r.usuario)}</td>
+              <td>${this.escape(r.proceso)}</td>
+              <td>${this.escape(r.maquina)}</td>
+              <td>${this.escape(r.formulario || "-")}</td>
+              <td>${this.escape(r.np || "-")}</td>
+              <td>${this.escape(r.turno || "-")}</td>
+              <td>${this.escape(r.estado || "-")}</td>
+              <td>${this.escape(r.observacion || "-")}</td>
+              <td>${this.escape(r.estadoValidacion || "PENDIENTE")}</td>
+              <td>${this.escape(r.imagenUrl || "-")}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `
+
+      document.body.appendChild(tabla)
+
+      window.ExcelExporter.exportTable({
+        tableSelector: "#tablaRegistrosControlExportTemp",
+        fileName: `qcc_registros_control_todos_${Date.now()}.xlsx`,
+        sheetName: "Registros Control",
+        title: "QCC - Registros de Control"
+      })
+
+      tabla.remove()
+    }
     getVal(id) {
       return document.getElementById(id)?.value || ""
     }
