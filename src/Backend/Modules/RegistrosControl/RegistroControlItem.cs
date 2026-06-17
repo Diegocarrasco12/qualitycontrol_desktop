@@ -26,6 +26,8 @@ namespace QualityControlCenter.Modules.RegistrosControl
         public string FechaValidacion { get; set; } = "";
         public string UsuarioValidacion { get; set; } = "";
 
+        public string ImagenUrl { get; set; } = "";
+
         public string Observacion { get; set; } = "";
 
         public string FechaRegistro { get; set; } = "";

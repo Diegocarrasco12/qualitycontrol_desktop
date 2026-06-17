@@ -46,6 +46,24 @@ namespace QualityControlCenter.Modules.RegistrosControl
                     return Ok(result);
                 }
 
+                if (action == "registrosControl.validarRegistro")
+                {
+                    var id = GetIntFromPayload(payload, "id", 0);
+
+                    await _service.ValidarRegistro(id);
+
+                    return Ok((object?)null);
+                }
+
+                if (action == "registrosControl.rechazarRegistro")
+                {
+                    var id = GetIntFromPayload(payload, "id", 0);
+
+                    await _service.RechazarRegistro(id);
+
+                    return Ok((object?)null);
+                }
+
                 return Error($"Acción no reconocida en RegistrosControl: {action}");
             }
             catch (Exception ex)
@@ -93,7 +111,36 @@ namespace QualityControlCenter.Modules.RegistrosControl
             return defaultValue;
         }
 
-        private static string Ok(object data)
+        private static int GetIntFromPayload(
+            Dictionary<string, object> payload,
+            string prop,
+            int defaultValue
+        )
+        {
+            if (!payload.TryGetValue(prop, out var rawValue))
+                return defaultValue;
+
+            if (rawValue is JsonElement jsonValue)
+            {
+                if (
+                    jsonValue.ValueKind == JsonValueKind.Number
+                    && jsonValue.TryGetInt32(out var number)
+                )
+                    return number;
+
+                if (int.TryParse(jsonValue.ToString(), out var parsed))
+                    return parsed;
+
+                return defaultValue;
+            }
+
+            if (int.TryParse(rawValue?.ToString(), out var value))
+                return value;
+
+            return defaultValue;
+        }
+
+        private static string Ok(object? data)
         {
             return JsonSerializer.Serialize(
                 new

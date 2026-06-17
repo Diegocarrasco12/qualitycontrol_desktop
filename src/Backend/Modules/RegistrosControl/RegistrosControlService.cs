@@ -46,5 +46,15 @@ namespace QualityControlCenter.Modules.RegistrosControl
                 pages
             };
         }
+
+        public async Task ValidarRegistro(int id)
+        {
+            await _repo.ValidarRegistro(id);
+        }
+
+        public async Task RechazarRegistro(int id)
+        {
+            await _repo.RechazarRegistro(id);
+        }
     }
 }

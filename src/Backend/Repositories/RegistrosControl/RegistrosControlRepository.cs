@@ -100,6 +100,10 @@ namespace QualityControlCenter.Repositories.RegistrosControl
                         rc.estado_id,
                         ec.nombre AS estado,
                         COALESCE(rc.observacion, '') AS observacion,
+                        IFNULL(rc.estado_validacion, 'PENDIENTE') AS estado_validacion,
+                        IFNULL(DATE_FORMAT(rc.fecha_validacion, '%d-%m-%Y %H:%i'), '') AS fecha_validacion,
+                        IFNULL(rc.usuario_validacion, '') AS usuario_validacion,
+                        IFNULL(ra.ruta_archivo, '') AS imagen_url,
                         DATE_FORMAT(rc.fecha_registro, '%Y-%m-%d') AS fecha_registro,
                         TIME_FORMAT(rc.hora_registro, '%H:%i:%s') AS hora_registro,
                         DATE_FORMAT(rc.creado_en, '%Y-%m-%d %H:%i:%s') AS creado_en
@@ -109,6 +113,7 @@ namespace QualityControlCenter.Repositories.RegistrosControl
                     INNER JOIN maquinas m ON m.id = rc.maquina_id
                     LEFT JOIN formularios_control fc ON fc.id = rc.formulario_id
                     INNER JOIN estados_catalogo ec ON ec.id = rc.estado_id
+                    LEFT JOIN registro_adjuntos ra ON ra.registro_id = rc.id
                     {whereSql}
                     ORDER BY rc.fecha_registro DESC, rc.hora_registro DESC, rc.id DESC
                     LIMIT @limit OFFSET @offset;
@@ -145,6 +150,10 @@ namespace QualityControlCenter.Repositories.RegistrosControl
                             EstadoId = reader.GetInt32("estado_id"),
                             Estado = reader.GetString("estado"),
                             Observacion = reader.GetString("observacion"),
+                            EstadoValidacion = reader.GetString("estado_validacion"),
+                            FechaValidacion = reader.GetString("fecha_validacion"),
+                            UsuarioValidacion = reader.GetString("usuario_validacion"),
+                            ImagenUrl = reader.GetString("imagen_url"),
                             FechaRegistro = reader.GetString("fecha_registro"),
                             HoraRegistro = reader.GetString("hora_registro"),
                             CreadoEn = reader.GetString("creado_en"),
@@ -154,6 +163,50 @@ namespace QualityControlCenter.Repositories.RegistrosControl
 
                 return (items, total);
             }
+        }
+
+        public async Task ValidarRegistro(int id)
+        {
+            await using var conn = _db.GetCalidadConnection();
+            await conn.OpenAsync();
+
+            await using var cmd = new MySqlCommand(
+                @"
+                UPDATE registros_control
+                SET
+                    estado_validacion = 'VALIDADO',
+                    fecha_validacion = NOW(),
+                    usuario_validacion = 'SUPERVISOR'
+                WHERE id = @id;
+                ",
+                conn
+            );
+
+            cmd.Parameters.AddWithValue("@id", id);
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task RechazarRegistro(int id)
+        {
+            await using var conn = _db.GetCalidadConnection();
+            await conn.OpenAsync();
+
+            await using var cmd = new MySqlCommand(
+                @"
+                UPDATE registros_control
+                SET
+                    estado_validacion = 'RECHAZADO',
+                    fecha_validacion = NOW(),
+                    usuario_validacion = 'SUPERVISOR'
+                WHERE id = @id;
+                ",
+                conn
+            );
+
+            cmd.Parameters.AddWithValue("@id", id);
+
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }

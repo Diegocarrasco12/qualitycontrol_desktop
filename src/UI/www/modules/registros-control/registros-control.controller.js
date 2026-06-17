@@ -42,29 +42,82 @@ if (!window.RegistrosControlController) {
         if (e.target.id === "btnBuscarRegistros") {
           this.page = 1
           this.cargarDatos()
+          return
         }
+
         if (e.target.id === "btnExportarRegistrosControl") {
           window.ExcelExporter.exportTable({
             tableSelector: "#tablaRegistrosControl",
-            fileName: `qcc_registros_calidad_${Date.now()}.xlsx`,
-            sheetName: "Registros Calidad",
-            title: "QCC - Registros de Calidad"
+            fileName: `qcc_registros_control_${Date.now()}.xlsx`,
+            sheetName: "Registros Control",
+            title: "QCC - Registros de Control"
           })
+          return
         }
 
         if (e.target.id === "btnLimpiarRegistros") {
           this.limpiarFiltros()
           this.page = 1
           this.cargarDatos()
+          return
+        }
+
+        if (e.target.classList.contains("btn-validar-registro-control")) {
+          const id = Number(e.target.dataset.id)
+
+          window.PhotinoBridge.send({
+            action: "registrosControl.validarRegistro",
+            id
+          }).then(() => {
+            this.cargarDatos()
+          })
+
+          return
+        }
+
+        if (e.target.classList.contains("btn-rechazar-registro-control")) {
+          const id = Number(e.target.dataset.id)
+
+          window.PhotinoBridge.send({
+            action: "registrosControl.rechazarRegistro",
+            id
+          }).then(() => {
+            this.cargarDatos()
+          })
+
+          return
+        }
+
+        if (e.target.classList.contains("btn-ver-imagen-registro-control")) {
+          const url = e.target.dataset.url || ""
+          this.mostrarImagenRegistroControl(url)
+          return
+        }
+
+        if (e.target.id === "btnCerrarImagenRegistroControl") {
+          this.cerrarImagenRegistroControl()
+          return
+        }
+
+        if (e.target.id === "modalImagenRegistroControl") {
+          this.cerrarImagenRegistroControl()
+          return
         }
 
         if (e.target.dataset.registrosPage) {
           this.page = Number(e.target.dataset.registrosPage)
           this.cargarDatos()
+          return
         }
       }
 
       document.addEventListener("click", this._clickHandler)
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          this.cerrarImagenRegistroControl()
+        }
+      })
     }
 
     async cargarDatos() {
@@ -115,28 +168,59 @@ if (!window.RegistrosControlController) {
 
       if (!this.data.length) {
         tbody.innerHTML = `
-            <tr>
-              <td colspan="11">Sin registros para los filtros seleccionados</td>
-            </tr>
-          `
+          <tr>
+            <td colspan="14">Sin registros para los filtros seleccionados</td>
+          </tr>
+        `
         return
       }
 
       tbody.innerHTML = this.data.map(r => `
-          <tr>
-            <td>${r.id}</td>
-            <td>${this.escape(r.fechaRegistro)}</td>
-            <td>${this.escape(r.horaRegistro)}</td>
-            <td>${this.escape(r.usuario)}</td>
-            <td>${this.escape(r.proceso)}</td>
-            <td>${this.escape(r.maquina)}</td>
-            <td>${this.escape(r.formulario || "-")}</td>
-            <td>${this.escape(r.np || "-")}</td>
-            <td>${this.escape(r.turno)}</td>
-            <td>${this.renderEstado(r.estado)}</td>
-            <td>${this.escape(r.observacion || "-")}</td>
-          </tr>
-        `).join("")
+        <tr>
+          <td>${r.id}</td>
+          <td>${this.escape(r.fechaRegistro)}</td>
+          <td>${this.escape(r.horaRegistro)}</td>
+          <td>${this.escape(r.usuario)}</td>
+          <td>${this.escape(r.proceso)}</td>
+          <td>${this.escape(r.maquina)}</td>
+          <td>${this.escape(r.formulario || "-")}</td>
+          <td>${this.escape(r.np || "-")}</td>
+          <td>${this.escape(r.turno)}</td>
+          <td>${this.renderEstado(r.estado)}</td>
+          <td>${this.escape(r.observacion || "-")}</td>
+
+          <td>
+            ${this.renderEstadoValidacion(r.estadoValidacion)}
+          </td>
+
+          <td>
+            <button
+              class="btn-primary btn-validar-registro-control"
+              data-id="${r.id}">
+              Validar
+            </button>
+
+            <button
+              class="btn-secondary btn-rechazar-registro-control"
+              data-id="${r.id}">
+              Rechazar
+            </button>
+          </td>
+
+          <td>
+            ${r.imagenUrl && r.imagenUrl.trim() !== ""
+          ? `
+                <button
+                  class="btn-secondary btn-ver-imagen-registro-control"
+                  data-url="${this.escape(r.imagenUrl)}">
+                  Ver Imagen
+                </button>
+              `
+          : "-"
+        }
+          </td>
+        </tr>
+      `).join("")
     }
 
     renderEstado(estado) {
@@ -144,15 +228,33 @@ if (!window.RegistrosControlController) {
       return `<span style="font-weight:600;">${this.escape(value)}</span>`
     }
 
+    renderEstadoValidacion(estado) {
+      const value = estado || "PENDIENTE"
+
+      let color = "#f59e0b"
+
+      if (value === "VALIDADO") color = "#16a34a"
+      if (value === "RECHAZADO") color = "#dc2626"
+
+      return `
+        <span style="
+          font-weight:700;
+          color:${color};
+        ">
+          ${this.escape(value)}
+        </span>
+      `
+    }
+
     renderLoading() {
       const tbody = document.getElementById("tbodyRegistrosControl")
       if (!tbody) return
 
       tbody.innerHTML = `
-          <tr>
-            <td colspan="11">Cargando registros...</td>
-          </tr>
-        `
+        <tr>
+          <td colspan="14">Cargando registros...</td>
+        </tr>
+      `
     }
 
     renderError(message) {
@@ -160,10 +262,10 @@ if (!window.RegistrosControlController) {
       if (!tbody) return
 
       tbody.innerHTML = `
-          <tr>
-            <td colspan="11">Error: ${this.escape(message)}</td>
-          </tr>
-        `
+        <tr>
+          <td colspan="14">Error: ${this.escape(message)}</td>
+        </tr>
+      `
     }
 
     renderKpis() {
@@ -196,12 +298,12 @@ if (!window.RegistrosControlController) {
 
       for (let i = inicio; i <= fin; i++) {
         html += `
-            <button
-              data-registros-page="${i}"
-              class="${i === this.page ? "active" : ""}">
-              ${i}
-            </button>
-          `
+          <button
+            data-registros-page="${i}"
+            class="${i === this.page ? "active" : ""}">
+            ${i}
+          </button>
+        `
       }
 
       if (fin < this.pages) {
@@ -228,6 +330,95 @@ if (!window.RegistrosControlController) {
         if (el) el.value = ""
         if (el && el._flatpickr) el._flatpickr.clear()
       })
+    }
+
+    mostrarImagenRegistroControl(url) {
+      const imagenUrl = this.normalizarImagenUrl(url)
+
+      if (!imagenUrl) {
+        alert("No hay imagen disponible para este registro.")
+        return
+      }
+
+      this.cerrarImagenRegistroControl()
+
+      const modal = document.createElement("div")
+      modal.id = "modalImagenRegistroControl"
+      modal.style.position = "fixed"
+      modal.style.left = "0"
+      modal.style.top = "0"
+      modal.style.width = "100%"
+      modal.style.height = "100%"
+      modal.style.background = "rgba(15, 23, 42, 0.75)"
+      modal.style.zIndex = "9999"
+      modal.style.display = "flex"
+      modal.style.alignItems = "center"
+      modal.style.justifyContent = "center"
+      modal.style.padding = "24px"
+
+      modal.innerHTML = `
+        <div style="
+          background:#ffffff;
+          border-radius:12px;
+          max-width:90%;
+          max-height:90%;
+          padding:16px;
+          box-shadow:0 20px 60px rgba(0,0,0,0.35);
+          position:relative;
+        ">
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:12px;
+          ">
+            <strong>Imagen del registro</strong>
+
+            <button
+              id="btnCerrarImagenRegistroControl"
+              class="btn-secondary"
+              type="button">
+              Cerrar
+            </button>
+          </div>
+
+          <img
+            src="${this.escape(imagenUrl)}"
+            alt="Imagen del registro"
+            style="
+              display:block;
+              max-width:100%;
+              max-height:75vh;
+              object-fit:contain;
+              border-radius:8px;
+            "
+          />
+        </div>
+      `
+
+      document.body.appendChild(modal)
+    }
+
+    cerrarImagenRegistroControl() {
+      const modal = document.getElementById("modalImagenRegistroControl")
+      if (modal) modal.remove()
+    }
+
+    normalizarImagenUrl(url) {
+      const value = String(url || "").trim()
+
+      if (!value) return ""
+
+      if (value.startsWith("http://") || value.startsWith("https://")) {
+        return value
+      }
+
+      if (value.startsWith("/")) {
+        return `https://api.faret.cl/calidad${value}`
+      }
+
+      return `https://api.faret.cl/calidad/${value}`
     }
 
     getVal(id) {
